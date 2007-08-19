@@ -1,6 +1,11 @@
 require 'socket'
+require 'socksify_debug'
 
 class SOCKSError < RuntimeError
+  def self.new(msg)
+    Socksify::debug_error(msg)
+  end
+
   class ServerFailure < SOCKSError
     def initialize
       super("general SOCKS server failure")
@@ -88,10 +93,13 @@ class TCPSocket
     socks_port = self.class.socks_port
 
     if socks_server and socks_port
+      Socksify::debug_notice "Connecting to SOCKS server #{socks_server}:#{socks_port}"
       initialize_tcp socks_server, socks_port
 
       # Authentication
+      Socksify::debug_debug "Sending no authentication"
       write "\005\001\000"
+      Socksify::debug_debug "Waiting for authentication reply"
       auth_reply = recv(2)
       if auth_reply[0] != 4 and auth_reply[0] != 5
         raise SOCKSError.new("SOCKS version #{auth_reply[0]} not supported")
@@ -101,6 +109,7 @@ class TCPSocket
       end
 
       # Connect
+      Socksify::debug_debug "Sending destination address"
       write "\005\001\000"
       if host =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/  # to IPv4 address
         write "\001" + [$1.to_i,
@@ -115,6 +124,7 @@ class TCPSocket
         write "\003" + [host.size].pack('C') + host
       end
       write [port].pack('n')
+      Socksify::debug_debug "Waiting for connect reply"
       connect_reply = recv(4)
       if connect_reply[0] != auth_reply[0]
         raise SOCKSError.new("SOCKS version #{connect_reply[0]} not requested")
@@ -122,6 +132,7 @@ class TCPSocket
       if connect_reply[1] != 0
         raise SOCKSError.new("SOCKS error #{connect_reply[1]}")
       end
+      Socksify::debug_debug "Waiting for bind_addr"
       bind_addr_len = case connect_reply[3]
                       when 1
                         4
@@ -133,8 +144,11 @@ class TCPSocket
                         raise SOCKSError.for_response_code(connect_reply[3])
                       end
       recv(bind_addr_len + 2)
+      Socksify::debug_notice "Connected to #{host}:#{port} over SOCKS server #{socks_server}:#{socks_port}"
     else
+      Socksify::debug_notice "Connecting directly to #{host}:#{port}"
       initialize_tcp host, port, local_host, local_port
+      Socksify::debug_debug "Connected to #{host}:#{port}"
     end
   end
 end

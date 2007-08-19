@@ -7,6 +7,7 @@ require 'uri'
 
 class SocksifyTest < Test::Unit::TestCase
   def setup
+    Socksify::debug = true
   end
 
   def test_whatismyip
