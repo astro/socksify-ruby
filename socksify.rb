@@ -101,7 +101,20 @@ class TCPSocket
       end
 
       # Connect
-      write "\005\001\000\003#{[host.size].pack('C')}#{host}#{[port].pack('n')}"
+      write "\005\001\000"
+      if host =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/  # to IPv4 address
+        write "\001" + [$1.to_i,
+                        $2.to_i,
+                        $3.to_i,
+                        $4.to_i
+                       ].pack('CCCC')
+      elsif host =~ /^[:0-9a-f]+$/  # to IPv6 address
+        raise "TCP/IPv6 over SOCKS is not yet supported (inet_pton missing in Ruby & not supported by Tor"
+        write "\004"
+      else                          # to hostname
+        write "\003" + [host.size].pack('C') + host
+      end
+      write [port].pack('n')
       connect_reply = recv(4)
       if connect_reply[0] != auth_reply[0]
         raise SOCKSError.new("SOCKS version #{connect_reply[0]} not requested")
