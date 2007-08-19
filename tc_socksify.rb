@@ -30,7 +30,6 @@ class SocksifyTest < Test::Unit::TestCase
 
   def whatismyip
     url = URI::parse('http://www.whatismyip.org/')
-    #url = URI::parse('http://206.176.224.3/')
     Net::HTTP.start(url.host, url.port) do |http|
       http.get('/', "User-Agent"=>"ruby-socksify test").body
     end
