@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+if ARGV.size < 3
+  puts "Usage: #{$0} <SOCKS host> <SOCKS port> <ruby script> [args ...]"
+  exit
+end
+
+require 'socksify'
+
+TCPSocket.socks_server = ARGV.shift
+TCPSocket.socks_port = ARGV.shift.to_i
+load ARGV.shift
