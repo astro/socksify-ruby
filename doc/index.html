@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml1-strict.dtd">
+
+<html>
+  <head>
+    <title>SOCKSify Ruby</title>
+    <link rel="stylesheet" type="text/css" href="index.css"/>
+  </head>
+  <body>
+    <h1>SOCKSify Ruby</h1>
+
+    <div class="content">
+
+      <h2>What is it?</h2>
+
+      <p>
+	<b>SOCKSify Ruby</b> redirects any TCP connection initiated by
+	a Ruby script through a SOCKS5 proxy. It serves as a small
+	drop-in alternative
+	to <a href="http://tsocks.sourceforge.net/">tsocks</a>, except
+	that it handles Ruby programs only and doesn't leak DNS
+	queries.
+      </p>
+
+      <h3>How does it work?</h3>
+
+      <p>
+	Modifications to class <code>TCPSocket</code>:
+      </p>
+      <ul>
+	<li>Alias <code>initialize</code>
+	  as <code>initialize_tcp</code></li>
+	<li>The new <code>initialize</code> calls the old method to
+	  establish a TCP connection to the SOCKS proxy, sends the
+	  proxying destination and checks for errors</li>
+      </ul>
+      <p>
+	Additionally, <code>Socksify::resolve</code> can be used to
+	resolve hostnames to IPv4 addresses via SOCKS.
+      </p>
+
+      <h2>Installation</h2>
+
+      <h2>Usage</h2>
+
+      <h3>Redirect all TCP connections of a Ruby program</h3>
+      <p>
+	Run a Ruby script with redirected TCP through a
+	local <a href="http://www.torproject.org/">Tor</a>
+	anonymizer:
+      </p>
+      <pre>$ socksify_ruby localhost 9050 script.rb</pre>
+
+      <h3>Explicit SOCKS usage in a Ruby program</h3>
+      <p>
+	Set up SOCKS connections for a
+	local <a href="http://www.torproject.org/">Tor</a>
+	anonymizer, TCPSockets can be used as usual:
+      </p>
+      <pre>require 'socksify'
+TCPSocket::socks_server = "127.0.0.1"
+TCPSocket::socks_port = 9050
+rubyforge_www = TCPSocket.new("rubyforge.org", 80)
+# => #&lt;TCPSocket:0x...&gt;</pre>
+
+      <h3>Resolve addresses via SOCKS</h3>
+      <pre>Socksify::resolve("spaceboyz.net")
+# => "87.106.131.203"</pre>
+
+      <h3>Debugging</h3>
+      <p>
+	Colorful diagnostic messages can be enabled via:
+      </p>
+      <pre>Socksify::debug = true</pre>
+
+      <h2>Development</h2>
+
+      <p>
+	The <a href="http://cthulhu.c3d2.de/~astro/gitweb/?p=socksify-ruby.git">repository</a>
+	can be checked out with:
+      </p>
+      <pre>git-clone http://cthulhu.c3d2.de/~astro/git/socksify-ruby.git/</pre>
+      <p>
+	Send patches via E-Mail.
+      </p>
+
+      <h3>Further ideas</h3>
+      <ul>
+	<li><code>Resolv</code> replacement code, so that programs
+	  which resolve by themselves don't leak DNS queries</li>
+	<li>IPv6 address support</li>
+	<li>UDP as soon
+	  as <a href="http://www.torproject.org/">Tor</a> supports
+	  it</li>
+	<li>Perhaps using standard exceptions for better compatibility
+	  when acting as a drop-in?</li>
+      </ul>
+
+      <h2>Author</h2>
+      <ul>
+	<li>
+	  <a href="mailto:stephan@spaceboyz.net">Stephan Maka</a>
+	</li>
+      </ul>
+
+      <h2>License</h2>
+      <p>
+	This program is free software: you can redistribute it and/or
+	modify it under the terms of the GNU General Public License as
+	published by the Free Software Foundation, either version 3 of
+	the License, or (at your option) any later version.
+      </p>
+      <p>
+	This program is distributed in the hope that it will be
+	useful, but WITHOUT ANY WARRANTY; without even the implied
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	PURPOSE.  See the GNU General Public License for more details.
+      </p>
+      <p>
+	You should have received a copy of the GNU General Public
+	License along with this program.  If not, see
+	&lt;<a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.
+      </p>
+    </div>
+  </body>
+</html>

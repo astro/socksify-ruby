@@ -44,7 +44,7 @@ module Socksify
   private
 
   def self.debug(color, str)
-    if @@debug
+    if defined? @@debug
       puts "#{color}#{now_s}#{Color::Reset} #{str}"
     end
   end

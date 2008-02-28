@@ -1,0 +1,37 @@
+body {
+  background-color: #8f001f;
+  font-family: sans-serif;
+}
+
+a { 
+  color: green;
+}
+
+h1 {
+  text-align: center;
+  margin: 0px;
+  color: white;
+  font-weight: bold;
+  font-size: 400%;
+}
+
+div.content {
+  background-color: white;
+  color: black;
+  max-width: 52em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.2em 1em;
+}
+
+p {
+  text-align: justify;
+}
+
+pre {
+  color: #8f001f;
+  background-color: #cfffbf;
+  padding: 4px;
+  margin: 2px 0px;
+  border: 1px dashed green;
+}
