@@ -102,11 +102,11 @@ class TCPSocket
   def self.socks_port=(port)
     @@socks_port = port
   end
-  def self.ignores
-    @@ignores ||= []
+  def self.socks_ignores
+    @@socks_ignores ||= []
   end
-  def self.ignores=(ignores)
-    @@ignores = ignores
+  def self.socks_ignores=(ignores)
+    @@socks_ignores = ignores
   end
 
   alias :initialize_tcp :initialize
@@ -115,9 +115,9 @@ class TCPSocket
   def initialize(host=nil, port=0, local_host="0.0.0.0", local_port=0)
     socks_server = self.class.socks_server
     socks_port = self.class.socks_port
-    ignores = self.class.ignores
+    socks_ignores = self.class.socks_ignores
 
-    if socks_server and socks_port and not ignores.include?(host)
+    if socks_server and socks_port and not socks_ignores.include?(host)
       Socksify::debug_notice "Connecting to SOCKS server #{socks_server}:#{socks_port}"
       initialize_tcp socks_server, socks_port
 

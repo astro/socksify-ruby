@@ -45,7 +45,7 @@ class SocksifyTest < Test::Unit::TestCase
     ip_direct = whatismyip
 
     enable_socks
-    TCPSocket.ignores << 'www.whatismyip.org'
+    TCPSocket.socks_ignores << 'www.whatismyip.org'
 
     ip_socks_ignored = whatismyip
 
