@@ -1,9 +1,12 @@
 #!/usr/bin/ruby
 
 require 'test/unit'
-require 'socksify'
 require 'net/http'
 require 'uri'
+
+$:.unshift "#{File::dirname($0)}/../lib/"
+require 'socksify'
+
 
 class SocksifyTest < Test::Unit::TestCase
   def setup
@@ -34,6 +37,19 @@ class SocksifyTest < Test::Unit::TestCase
 
       assert(ip_direct != ip_socks)
     end
+  end
+
+  def test_ignores
+    disable_socks
+
+    ip_direct = whatismyip
+
+    enable_socks
+    TCPSocket.ignores << 'www.whatismyip.org'
+
+    ip_socks_ignored = whatismyip
+
+    assert(ip_direct == ip_socks_ignored)
   end
 
   def whatismyip
