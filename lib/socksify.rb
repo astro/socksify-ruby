@@ -18,7 +18,7 @@
 require 'socket'
 require 'socksify_debug'
 
-class SOCKSError < RuntimeError
+class SOCKSError < SystemCallError
   def initialize(msg)
     Socksify::debug_error("#{self.class}: #{msg}")
     super
