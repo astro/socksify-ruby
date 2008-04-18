@@ -22,18 +22,18 @@ class SocksifyTest < Test::Unit::TestCase
     TCPSocket.socks_port = 9050
   end
 
-  def test_whatismyip
-    [['Hostname', :whatismyip],
-     ['IPv4', :whatismyip_ip]].each do |f_name, f|
+  def test_check_tor
+    [['Hostname', :check_tor],
+     ['IPv4', :check_tor_ip]].each do |f_name, f|
       disable_socks
 
-      ip_direct = send(f)
-      puts "By #{f_name} directly: #{ip_direct}"
+      tor_direct, ip_direct = send(f)
+      assert_equal(false, tor_direct)
 
       enable_socks
 
-      ip_socks = send(f)
-      puts "By #{f_name} over SOCKS: #{ip_socks}"
+      tor_socks, ip_socks = send(f)
+      assert_equal(true, tor_socks)
 
       assert(ip_direct != ip_socks)
     end
@@ -42,30 +42,50 @@ class SocksifyTest < Test::Unit::TestCase
   def test_ignores
     disable_socks
 
-    ip_direct = whatismyip
+    tor_direct, ip_direct = check_tor
+    assert_equal(false, tor_direct)
 
     enable_socks
-    TCPSocket.socks_ignores << 'www.whatismyip.org'
+    TCPSocket.socks_ignores << 'check.torproject.org'
 
-    ip_socks_ignored = whatismyip
+    tor_socks_ignored, ip_socks_ignored = check_tor
+    assert_equal(false, tor_socks_ignored)
 
     assert(ip_direct == ip_socks_ignored)
   end
 
-  def whatismyip
-    url = URI::parse('http://www.whatismyip.org/')
-    Net::HTTP.start(url.host, url.port) do |http|
-      http.get('/', "User-Agent"=>"ruby-socksify test").body
-    end
+  def check_tor
+    url = URI::parse('http://check.torproject.org/')
+    parse_check_response(Net::HTTP.start(url.host, url.port) do |http|
+                           http.get('/', "User-Agent"=>"ruby-socksify test").body
+                         end)
   end
 
-  def whatismyip_ip
-    url = URI::parse('http://206.176.224.3/')
-    Net::HTTP.start(url.host, url.port) do |http|
-      http.get('/',
-               "Host"=>"www.whatismyip.org",
-               "User-Agent"=>"ruby-socksify test").body
+  def check_tor_ip
+    url = URI::parse('http://209.237.247.84/')
+    parse_check_response(Net::HTTP.start(url.host, url.port) do |http|
+                           http.get('/',
+                                    "Host"=>"www.whatismyip.org",
+                                    "User-Agent"=>"ruby-socksify test").body
+                         end)
+  end
+
+  def parse_check_response(body)
+    if body.include? 'You are (probably) using Tor.'
+      is_tor = true
+    elsif body.include? 'You are (probably) not using Tor.'
+      is_tor = false
+    else
+      raise 'Bogus response'
     end
+
+    if body =~ /Your IP appears to be: <b>(\d+\.\d+\.\d+\.\d+)<\/b>/
+      ip = $1
+    else
+      raise 'Bogus response, no IP'
+    end
+
+    [is_tor, ip]
   end
 
   def test_resolve
