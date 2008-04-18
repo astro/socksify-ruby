@@ -1,0 +1,23 @@
+2008-02-28
+SOCKSify Ruby 1.0.0
+===================
+* Initial release
+
+2008-03-10
+SOCKSify Ruby 1.0.1
+===================
+* Gem packaging fix
+  (thanks to Patrick Sinclair)
+
+2008-04-17
+SOCKSify Ruby 1.1.0
+===================
+* TCPSocket::socks_ignores
+  (idea by Patrick Sinclair)
+
+2008-04-18
+SOCKSify Ruby 1.2.0
+===================
+* SOCKSError derives from SystemCallError
+  for better compatiblity with apps
+* Use check.torproject.org in tests
