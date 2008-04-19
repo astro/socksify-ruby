@@ -18,51 +18,50 @@
 require 'socket'
 require 'socksify_debug'
 
-class SOCKSError < SystemCallError
-  def initialize(mesg, errno_class)
-    Socksify::debug_error("#{self.class}: #{mesg}")
-    super(errno_class.new.errno)
-    @mesg = mesg
+class SOCKSError < RuntimeError
+  def initialize(msg)
+    Socksify::debug_error("#{self.class}: #{msg}")
+    super
   end
 
   class ServerFailure < SOCKSError
     def initialize
-      super("general SOCKS server failure", Errno::EBADMSG) # closest match?
+      super("general SOCKS server failure")
     end
   end
   class NotAllowed < SOCKSError
     def initialize
-      super("connection not allowed by ruleset", Errno::EACCES)
+      super("connection not allowed by ruleset")
     end
   end
   class NetworkUnreachable < SOCKSError
     def initialize
-      super("Network unreachable", Errno::ENETUNREACH)
+      super("Network unreachable")
     end
   end
   class HostUnreachable < SOCKSError
     def initialize
-      super("Host unreachable", Errno::EHOSTUNREACH)
+      super("Host unreachable")
     end
   end
   class ConnectionRefused < SOCKSError
     def initialize
-      super("Connection refused", Errno::ECONNREFUSED)
+      super("Connection refused")
     end
   end
   class TTLExpired < SOCKSError
     def initialize
-      super("TTL expired", Errno::ETIME) # closest match?
+      super("TTL expired")
     end
   end
   class CommandNotSupported < SOCKSError
     def initialize
-      super("Command not supported", Errno::EOPNOTSUPP)
+      super("Command not supported")
     end
   end
   class AddressTypeNotSupported < SOCKSError
     def initialize
-      super("Address type not supported", Errno::EAFNOSUPPORT)
+      super("Address type not supported")
     end
   end
 

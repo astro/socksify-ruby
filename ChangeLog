@@ -18,6 +18,4 @@ SOCKSify Ruby 1.1.0
 2008-04-18
 SOCKSify Ruby 1.2.0
 ===================
-* SOCKSError derives from SystemCallError
-  for better compatiblity with apps
 * Use check.torproject.org in tests
