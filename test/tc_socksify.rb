@@ -71,15 +71,15 @@ class SocksifyTest < Test::Unit::TestCase
   end
 
   def parse_check_response(body)
-    if body.include? 'You are (probably) using Tor.'
+    if body.include? 'You are using Tor.'
       is_tor = true
-    elsif body.include? 'You are (probably) not using Tor.'
+    elsif body.include? 'You are not using Tor.'
       is_tor = false
     else
       raise 'Bogus response'
     end
 
-    if body =~ /Your IP appears to be: <b>(\d+\.\d+\.\d+\.\d+)<\/b>/
+    if body =~ /Your IP address appears to be: <b>(\d+\.\d+\.\d+\.\d+)<\/b>/
       ip = $1
     else
       raise 'Bogus response, no IP'
