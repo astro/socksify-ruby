@@ -139,11 +139,11 @@ class TCPSocket
     write "\005\001\000"
     Socksify::debug_debug "Waiting for authentication reply"
     auth_reply = recv(2)
-    if auth_reply[0] != 4 and auth_reply[0] != 5
-      raise SOCKSError.new("SOCKS version #{auth_reply[0]} not supported")
+    if auth_reply[0..0] != "\004" and auth_reply[0..0] != "\005"
+      raise SOCKSError.new("SOCKS version #{auth_reply[0..0]} not supported")
     end
-    if auth_reply[1] != 0
-      raise SOCKSError.new("SOCKS authentication method #{auth_reply[1]} neither requested nor supported")
+    if auth_reply[1..1] != "\000"
+      raise SOCKSError.new("SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported")
     end
   end
 
@@ -173,30 +173,30 @@ class TCPSocket
   def socks_receive_reply
     Socksify::debug_debug "Waiting for SOCKS reply"
     connect_reply = recv(4)
-    if connect_reply[0] != 5
-      raise SOCKSError.new("SOCKS version #{connect_reply[0]} is not 5")
+    if connect_reply[0..0] != "\005"
+      raise SOCKSError.new("SOCKS version #{connect_reply[0..0]} is not 5")
     end
-    if connect_reply[1] != 0
-      raise SOCKSError.for_response_code(connect_reply[1])
+    if connect_reply[1..1] != "\000"
+      raise SOCKSError.for_response_code(connect_reply.bytes.to_a[1])
     end
     Socksify::debug_debug "Waiting for bind_addr"
-    bind_addr_len = case connect_reply[3]
-                    when 1
+    bind_addr_len = case connect_reply[3..3]
+                    when "\001"
                       4
-                    when 3
-                      recv(1)[0]
-                    when 4
+                    when "\003"
+                      recv(1).bytes.first
+                    when "\004"
                       16
                     else
-                      raise SOCKSError.for_response_code(connect_reply[3])
+                      raise SOCKSError.for_response_code(connect_reply.bytes.to_a[3])
                     end
     bind_addr_s = recv(bind_addr_len)
-    bind_addr = case connect_reply[3]
-                when 1
-                  "#{bind_addr_s[0]}.#{bind_addr_s[1]}.#{bind_addr_s[2]}.#{bind_addr_s[3]}"
-                when 3
+    bind_addr = case connect_reply[3..3]
+                when "\001"
+                  bind_addr_s.bytes.to_a.join('.')
+                when "\003"
                   bind_addr_s
-                when 4  # Untested!
+                when "\004"  # Untested!
                   i = 0
                   ip6 = ""
                   bind_addr_s.each_byte do |b|
