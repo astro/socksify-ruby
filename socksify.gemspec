@@ -4,7 +4,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   s.name = 'socksify'
-  s.version = "1.1.0"
+  s.version = "1.1.1"
   s.summary = "Redirect all TCPSockets through a SOCKS5 proxy"
   s.author = "Stephan Maka"
   s.email = "stephan@spaceboyz.net"
