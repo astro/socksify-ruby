@@ -91,13 +91,13 @@ end
 
 class TCPSocket
   def self.socks_server
-    @@socks_server
+    @@socks_server ||= nil
   end
   def self.socks_server=(host)
     @@socks_server = host
   end
   def self.socks_port
-    @@socks_port
+    @@socks_port ||= nil
   end
   def self.socks_port=(port)
     @@socks_port = port
