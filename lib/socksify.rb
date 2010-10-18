@@ -16,6 +16,7 @@
 =end
 
 require 'socket'
+require 'resolv'
 require 'socksify_debug'
 
 class SOCKSError < RuntimeError
@@ -90,13 +91,13 @@ class SOCKSError < RuntimeError
 end
 
 class TCPSocket
-  @@socks_version ||= 5
-
+  @@socks_version ||= "5"
+  
   def self.socks_version
-    @@socks_version == 4 ? "\004" : "\005"
+    (@@socks_version == "4a" or @@socks_version == "4") ? "\004" : "\005"
   end
   def self.socks_version=(version)
-    @@socks_version = version
+    @@socks_version = version.to_s
   end
   def self.socks_server
     @@socks_server ||= nil
@@ -129,7 +130,7 @@ class TCPSocket
       Socksify::debug_notice "Connecting to SOCKS server #{socks_server}:#{socks_port}"
       initialize_tcp socks_server, socks_port
 
-      socks_authenticate unless @@socks_version == 4
+      socks_authenticate unless @@socks_version =~ /^4/
 
       if host
         socks_connect(host, port)
@@ -159,12 +160,17 @@ class TCPSocket
   def socks_connect(host, port)
     Socksify::debug_debug "Sending destination address"
     write TCPSocket.socks_version
+    Socksify::debug_debug TCPSocket.socks_version.unpack "H*"
     write "\001"
-    write "\000" if @@socks_version == 5
-    write [port].pack('n') if @@socks_version == 4
+    write "\000" if @@socks_version == "5"
+    write [port].pack('n') if @@socks_version =~ /^4/
 
+    if @@socks_version == "4"
+      host = Resolv::DNS.new.getaddress(host).to_s
+    end
+    Socksify::debug_debug host
     if host =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/  # to IPv4 address
-      write "\001" if @@socks_version == 5
+      write "\001" if @@socks_version == "5"
       _ip = [$1.to_i,
              $2.to_i,
              $3.to_i,
@@ -175,16 +181,17 @@ class TCPSocket
       raise "TCP/IPv6 over SOCKS is not yet supported (inet_pton missing in Ruby & not supported by Tor"
       write "\004"
     else                          # to hostname
-      if @@socks_version == 5
+      if @@socks_version == "5"
         write "\003" + [host.size].pack('C') + host
       else
         write "\000\000\000\001"
-        write "\001\000"
+        write "\007\000"
+        Socksify::debug_notice host
         write host
         write "\000"
       end
     end
-    write [port].pack('n') if @@socks_version == 5
+    write [port].pack('n') if @@socks_version == "5"
 
     socks_receive_reply
     Socksify::debug_notice "Connected to #{host}:#{port} over SOCKS"
@@ -193,10 +200,11 @@ class TCPSocket
   # returns [bind_addr: String, bind_port: Fixnum]
   def socks_receive_reply
     Socksify::debug_debug "Waiting for SOCKS reply"
-    if @@socks_version == 5
+    if @@socks_version == "5"
       connect_reply = recv(4)
+      Socksify::debug_debug connect_reply.unpack "H*"
       if connect_reply[0..0] != "\005"
-        raise SOCKSError.new("SOCKS version #{connect_reply[0..0]} is not 4 or 5")
+        raise SOCKSError.new("SOCKS version #{connect_reply[0..0]} is not 5")
       end
       if connect_reply[1..1] != "\000"
         raise SOCKSError.for_response_code(connect_reply.bytes.to_a[1])
