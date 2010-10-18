@@ -90,8 +90,9 @@ class SOCKSError < RuntimeError
 end
 
 class TCPSocket
+  @@socks_version ||= 5
+
   def self.socks_version
-    @@socks_version ||= 5
     @@socks_version == 4 ? "\004" : "\005"
   end
   def self.socks_version=(version)
