@@ -17,7 +17,7 @@
 
 require 'socket'
 require 'resolv'
-require 'socksify_debug'
+require 'socksify/debug'
 
 class SOCKSError < RuntimeError
   def initialize(msg)
