@@ -71,7 +71,7 @@ class SocksifyTest < Test::Unit::TestCase
   end
 
   def parse_check_response(body)
-    if body.include? 'You are using Tor.'
+    if body.include? 'Your browser is configured to use Tor.'
       is_tor = true
     elsif body.include? 'You are not using Tor.'
       is_tor = false
