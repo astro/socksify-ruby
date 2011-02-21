@@ -6,6 +6,7 @@ require 'uri'
 
 $:.unshift "#{File::dirname($0)}/../lib/"
 require 'socksify'
+require 'socksify/http'
 
 
 class SocksifyTest < Test::Unit::TestCase
@@ -22,6 +23,10 @@ class SocksifyTest < Test::Unit::TestCase
     TCPSocket.socks_port = 9050
   end
 
+  def http_tor_proxy
+    Net::HTTP::SOCKSProxy("127.0.0.1", 9050)
+  end
+
   def test_check_tor
     [['Hostname', :check_tor],
      ['IPv4', :check_tor_ip]].each do |f_name, f|
@@ -33,6 +38,21 @@ class SocksifyTest < Test::Unit::TestCase
       enable_socks
 
       tor_socks, ip_socks = send(f)
+      assert_equal(true, tor_socks)
+
+      assert(ip_direct != ip_socks)
+    end
+  end
+
+  def test_check_tor_via_net_http
+    disable_socks
+
+    [['Hostname', :check_tor],
+     ['IPv4', :check_tor_ip]].each do |f_name, f|
+      tor_direct, ip_direct = send(f)
+      assert_equal(false, tor_direct)
+
+      tor_socks, ip_socks = send(f, http_tor_proxy)
       assert_equal(true, tor_socks)
 
       assert(ip_direct != ip_socks)
@@ -54,16 +74,16 @@ class SocksifyTest < Test::Unit::TestCase
     assert(ip_direct == ip_socks_ignored)
   end
 
-  def check_tor
+  def check_tor(http_klass = Net::HTTP)
     url = URI::parse('http://check.torproject.org/')
-    parse_check_response(Net::HTTP.start(url.host, url.port) do |http|
+    parse_check_response(http_klass.start(url.host, url.port) do |http|
                            http.get('/', "User-Agent"=>"ruby-socksify test").body
                          end)
   end
 
-  def check_tor_ip
+  def check_tor_ip(http_klass = Net::HTTP)
     url = URI::parse('http://209.237.247.84/')
-    parse_check_response(Net::HTTP.start(url.host, url.port) do |http|
+    parse_check_response(http_klass.start(url.host, url.port) do |http|
                            http.get('/',
                                     "Host"=>"www.whatismyip.org",
                                     "User-Agent"=>"ruby-socksify test").body
