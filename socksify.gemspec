@@ -4,9 +4,9 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   s.name = 'socksify'
-  s.version = "1.1.2"
+  s.version = "1.3.0"
   s.summary = "Redirect all TCPSockets through a SOCKS5 proxy"
-  s.authors = ["Stephan Maka", "Andrey Kouznetsov"]
+  s.authors = ["Stephan Maka", "Andrey Kouznetsov", "Christopher Thorpe", "Musy Bite"]
   s.email = "stephan@spaceboyz.net"
   s.homepage = "http://socksify.rubyforge.org/"
   s.rubyforge_project = 'socksify'
