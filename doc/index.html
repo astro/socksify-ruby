@@ -37,7 +37,7 @@
       <p>
 	Additionally, <code>Socksify::resolve</code> can be used to
 	resolve hostnames to IPv4 addresses via SOCKS. There is also
-	<code>socksify/http</code> library enabling Net::HTTP to work
+	<code>socksify/http</code> enabling Net::HTTP to work
 	via SOCKS.
       </p>
 
@@ -68,9 +68,9 @@ rubyforge_www = TCPSocket.new("rubyforge.org", 80)
 
       <h3>Use Net::HTTP explicitly via SOCKS</h3>
       <p>
-	Require additional library <code>socksify/http</code>
-	and use <code>Net::HTTP.SOCKSProxy</code> method. It
-	is similar to <code>Net:HTTP.Proxy</code> from Ruby
+	Require the additional library <code>socksify/http</code>
+	and use the <code>Net::HTTP.SOCKSProxy</code> method. It
+	is similar to <code>Net:HTTP.Proxy</code> from the Ruby
 	standard library:
       </p>
       <pre>
@@ -82,7 +82,7 @@ end
 # => #&lt;Net::HTTPOK 200 OK readbody=true&gt;</pre>
 
       <p>
-	Note that <code>Net::HTTP.SOCKSProxy</code> never rely
+	Note that <code>Net::HTTP.SOCKSProxy</code> never relies
 	on <code>TCPSocket::socks_server</code>/<code>socks_port</code>.
 	You should either set <code>SOCKSProxy</code> arguments
 	explicitly or use <code>Net::HTTP</code> directly.
