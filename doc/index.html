@@ -66,6 +66,17 @@ TCPSocket::socks_port = 9050
 rubyforge_www = TCPSocket.new("rubyforge.org", 80)
 # => #&lt;TCPSocket:0x...&gt;</pre>
 
+      <p>
+	Using block only:
+      <pre>require 'socksify'
+require 'open-uri'
+Socksify::proxy("127.0.0.1", 9050) {
+  open('http://rubyforge.org').read
+  # => #&lt;String: rubyforge's html&gt;
+}
+</pre>
+      </p>
+
       <h3>Use Net::HTTP explicitly via SOCKS</h3>
       <p>
 	Require the additional library <code>socksify/http</code>
