@@ -298,4 +298,17 @@ module Socksify
       s.close
     end
   end
+
+  def self.proxy(server, port)
+    default_server = TCPSocket::socks_server
+    default_port = TCPSocket::socks_port
+    begin
+      TCPSocket::socks_server = server
+      TCPSocket::socks_port = port
+      yield
+    ensure
+      TCPSocket::socks_server = default_server
+      TCPSocket::socks_port = default_port
+    end
+  end
 end

@@ -119,4 +119,38 @@ class SocksifyTest < Test::Unit::TestCase
       Socksify::resolve("0.0.0.0")
     end
   end
+
+  def test_proxy
+    enable_socks 
+
+    default_server = TCPSocket.socks_server
+    default_port = TCPSocket.socks_port
+
+    Socksify.proxy('localhost.example.com', 60001) {
+      assert_equal TCPSocket.socks_server, 'localhost.example.com'
+      assert_equal TCPSocket.socks_port, 60001
+    }
+
+    assert_equal TCPSocket.socks_server, default_server
+    assert_equal TCPSocket.socks_port, default_port
+  end
+
+  def test_proxy_failback
+    enable_socks 
+
+    default_server = TCPSocket.socks_server
+    default_port = TCPSocket.socks_port
+
+    assert_raise StandardError do
+      Socksify.proxy('localhost.example.com', 60001) {
+        raise StandardError.new('error')
+      }
+    end
+
+    assert_equal TCPSocket.socks_server, default_server
+    assert_equal TCPSocket.socks_port, default_port
+  end
 end
+
+
+
