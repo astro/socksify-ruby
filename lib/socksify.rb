@@ -112,7 +112,7 @@ class TCPSocket
     @@socks_port = port
   end
   def self.socks_ignores
-    @@socks_ignores ||= []
+    @@socks_ignores ||= %w(localhost)
   end
   def self.socks_ignores=(ignores)
     @@socks_ignores = ignores
