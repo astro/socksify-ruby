@@ -125,7 +125,7 @@ class TCPSocket
     end
 
     def to_s
-      "#{@peer_host} (via #{@socks_server}:#{@socks_port}"
+      "#{@peer_host} (via #{@socks_server}:#{@socks_port})"
     end
     alias_method :to_str, :to_s
   end
