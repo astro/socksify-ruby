@@ -111,6 +111,18 @@ class TCPSocket
   def self.socks_port=(port)
     @@socks_port = port
   end
+  def self.socks_username
+    @@socks_username ||= nil
+  end
+  def self.socks_username=(username)
+    @@socks_username = username
+  end
+  def self.socks_password
+    @@socks_password ||= nil
+  end
+  def self.socks_password=(password)
+    @@socks_password = password
+  end
   def self.socks_ignores
     @@socks_ignores ||= %w(localhost)
   end
@@ -161,18 +173,39 @@ class TCPSocket
       Socksify::debug_debug "Connected to #{host}:#{port}"
     end
   end
-  
+
   # Authentication
   def socks_authenticate
-    Socksify::debug_debug "Sending no authentication"
-    write "\005\001\000"
+    if self.class.socks_username || self.class.socks_password
+      Socksify::debug_debug "Sending username/password authentication"
+      write "\005\001\001\002"
+    else
+      Socksify::debug_debug "Sending no authentication"
+      write "\005\001\000"
+    end
     Socksify::debug_debug "Waiting for authentication reply"
     auth_reply = recv(2)
     if auth_reply[0..0] != "\004" and auth_reply[0..0] != "\005"
       raise SOCKSError.new("SOCKS version #{auth_reply[0..0]} not supported")
     end
-    if auth_reply[1..1] != "\000"
-      raise SOCKSError.new("SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported")
+    if self.class.socks_username || self.class.socks_password
+      if auth_reply[1..1] != "\002"
+        raise SOCKSError.new("SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported")
+      end
+      auth = "\001"
+      auth += self.class.socks_username.to_s.length.chr
+      auth += self.class.socks_username.to_s
+      auth += self.class.socks_password.to_s.length.chr
+      auth += self.class.socks_password.to_s
+      write auth
+      auth_reply = recv(2)
+      if auth_reply[1..1] != "\000"
+        raise SOCKSError.new("SOCKS authentication failed")
+      end
+    else
+      if auth_reply[1..1] != "\000"
+        raise SOCKSError.new("SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported")
+      end
     end
   end
 
