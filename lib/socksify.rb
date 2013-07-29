@@ -131,16 +131,21 @@ class TCPSocket
     @@socks_ignores = ignores
   end
 
-  class SOCKSConnectionPeerAddress
-    attr_reader :socks_server, :socks_port, :peer_host
+  class SOCKSConnectionPeerAddress < String
+    attr_reader :socks_server, :socks_port
+
     def initialize(socks_server, socks_port, peer_host)
-      @socks_server, @socks_port, @peer_host = socks_server, socks_port, peer_host
+      @socks_server, @socks_port = socks_server, socks_port
+      super peer_host
     end
 
-    def to_s
-      "#{@peer_host} (via #{@socks_server}:#{@socks_port})"
+    def inspect
+      "#{to_s} (via #{@socks_server}:#{@socks_port})"
     end
-    alias_method :to_str, :to_s
+
+    def peer_host
+      to_s
+    end
   end
 
   alias :initialize_tcp :initialize
