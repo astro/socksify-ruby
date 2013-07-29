@@ -1,3 +1,4 @@
+#encoding: us-ascii
 =begin
     Copyright (C) 2007 Stephan Maka <stephan@spaceboyz.net>
 
