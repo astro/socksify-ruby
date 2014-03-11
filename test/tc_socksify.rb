@@ -74,24 +74,30 @@ class SocksifyTest < Test::Unit::TestCase
     assert(ip_direct == ip_socks_ignored)
   end
 
+  def get_http(http_klass, url)
+    uri = URI(url)
+    body = nil
+    http_klass.start(uri.host, uri.port,
+                     :use_ssl => uri.scheme == 'https',
+                     :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
+      req = Net::HTTP::Get.new uri
+      req['Host'] = "check.torproject.org"
+      req['User-Agent'] = "ruby-socksify test"
+      body = http.request(req).body
+    end
+    body
+  end
+
   def check_tor(http_klass = Net::HTTP)
-    url = URI::parse('http://check.torproject.org/')
-    parse_check_response(http_klass.start(url.host, url.port) do |http|
-                           http.get('/', "User-Agent"=>"ruby-socksify test").body
-                         end)
+    parse_check_response get_http(http_klass, 'https://check.torproject.org/')
   end
 
   def check_tor_ip(http_klass = Net::HTTP)
-    url = URI::parse('http://38.229.72.22/')  # "check.torproject.org"
-    parse_check_response(http_klass.start(url.host, url.port) do |http|
-                           http.get('/',
-                                    "Host"=>"check.torproject.org",
-                                    "User-Agent"=>"ruby-socksify test").body
-                         end)
+    parse_check_response get_http(http_klass, 'https://38.229.72.22/')  # "check.torproject.org"
   end
 
   def parse_check_response(body)
-    if body.include? 'Your browser is configured to use Tor.'
+    if body.include? 'This browser is configured to use Tor.'
       is_tor = true
     elsif body.include? 'You are not using Tor.'
       is_tor = false
@@ -99,7 +105,7 @@ class SocksifyTest < Test::Unit::TestCase
       raise 'Bogus response'
     end
 
-    if body =~ /Your IP address appears to be: <b>(\d+\.\d+\.\d+\.\d+)<\/b>/
+    if body =~ /Your IP address appears to be:\s*<strong>(\d+\.\d+\.\d+\.\d+)<\/strong>/
       ip = $1
     else
       raise 'Bogus response, no IP'
