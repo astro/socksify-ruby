@@ -178,7 +178,7 @@ class TCPSocket
   def socks_authenticate
     if self.class.socks_username || self.class.socks_password
       Socksify::debug_debug "Sending username/password authentication"
-      write "\005\001\001\002"
+      write "\005\001\002"
     else
       Socksify::debug_debug "Sending no authentication"
       write "\005\001\000"
