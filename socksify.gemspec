@@ -20,8 +20,3 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = false
   s.extra_rdoc_files = Dir.glob("doc/**/*") + %w{COPYING}
 end
-
-if $0 == __FILE__
-  require 'rubygems/builder'
-  Gem::Builder.new(spec).build
-end
