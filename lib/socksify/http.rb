@@ -46,8 +46,14 @@ module Net
       end
 
       module InstanceMethods
-        def conn_address
-          TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, address())
+        if RUBY_VERSION[0..0] >= '2'
+          def address
+            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, @address)
+          end
+        else
+          def conn_address
+            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, address())
+          end
         end
       end
     end

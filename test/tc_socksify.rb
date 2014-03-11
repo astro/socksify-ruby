@@ -82,7 +82,7 @@ class SocksifyTest < Test::Unit::TestCase
   end
 
   def check_tor_ip(http_klass = Net::HTTP)
-    url = URI::parse('http://38.229.70.31/')  # "check.torproject.org"
+    url = URI::parse('http://38.229.72.22/')  # "check.torproject.org"
     parse_check_response(http_klass.start(url.host, url.port) do |http|
                            http.get('/',
                                     "Host"=>"check.torproject.org",
@@ -92,12 +92,19 @@ class SocksifyTest < Test::Unit::TestCase
 
   def parse_check_response(body)
     if body.include? 'Your browser is configured to use Tor.'
-      true
+      is_tor = true
     elsif body.include? 'You are not using Tor.'
-      false
+      is_tor = false
     else
       raise 'Bogus response'
     end
+
+    if body =~ /Your IP address appears to be: <b>(\d+\.\d+\.\d+\.\d+)<\/b>/
+      ip = $1
+    else
+      raise 'Bogus response, no IP'
+    end
+    [is_tor, ip]
   end
 
   def test_resolve
