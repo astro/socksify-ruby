@@ -151,7 +151,7 @@ class TCPSocket
   alias :initialize_tcp :initialize
 
   # See http://tools.ietf.org/html/rfc1928
-  def initialize(host=nil, port=0, local_host="0.0.0.0", local_port=0)
+  def initialize(host=nil, port=0, local_host=nil, local_port=nil)
     if host.is_a?(SOCKSConnectionPeerAddress)
       socks_peer = host
       socks_server = socks_peer.socks_server
