@@ -19,3 +19,26 @@ SOCKSify Ruby 1.1.0
 SOCKSify Ruby 1.2.0
 ===================
 * Use check.torproject.org in tests
+
+2011-02-22
+SOCKSify Ruby 1.3.0
+===================
+* Net::HTTP::SOCKSProxy
+
+2011-03-31
+SOCKSify Ruby 1.4.0
+===================
+* Socksify.proxy
+  (thanks to Yuichi Tateno)
+
+2011-06-07
+SOCKSify Ruby 1.4.1
+===================
+* default socks_ignores ||= %w(localhost)
+  (idea by Leonid Shevtsov)
+
+2012-06-22
+SOCKSify Ruby 1.5.0
+===================
+* allow username/password authorization
+  (thanks to David Dollar)
