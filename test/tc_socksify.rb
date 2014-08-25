@@ -80,7 +80,7 @@ class SocksifyTest < Test::Unit::TestCase
     http_klass.start(uri.host, uri.port,
                      :use_ssl => uri.scheme == 'https',
                      :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
-      req = Net::HTTP::Get.new uri
+      req = Net::HTTP::Get.new uri.request_uri
       req['Host'] = "check.torproject.org"
       req['User-Agent'] = "ruby-socksify test"
       body = http.request(req).body
