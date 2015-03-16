@@ -330,7 +330,7 @@ module Socksify
       end
       s.write [0].pack('n')  # Port
       
-      addr, port = s.socks_receive_reply
+      addr, _port = s.socks_receive_reply
       Socksify::debug_notice "Resolved #{host} as #{addr} over SOCKS"
       addr
     ensure
