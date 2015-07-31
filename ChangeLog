@@ -49,3 +49,13 @@ SOCKSify Ruby 1.6.0
 * Ruby 2.0 and 2.1 compatibility.
 * fix bug in authentication header
   (thanks to David Dollar)
+
+2015-07-31
+SOCKSify Ruby 1.7.0
+===================
+* Look up port in /etc/services by name if necessary
+* Helpful error message when client receives nothing from server during
+authentication
+  (thanks to Bachue Zhou)
+* Fix unused variable warning
+  (thanks to Florin Asavoaie)
