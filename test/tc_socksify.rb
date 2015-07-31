@@ -65,7 +65,7 @@ class SocksifyTest < Test::Unit::TestCase
     assert(ip_direct != ip_socks)
   end
 
-  def test_check_tor_via_net_http
+  def test_connect_to_ip_via_net_http
     disable_socks
 
     ip_direct = internet_yandex_com_ip
