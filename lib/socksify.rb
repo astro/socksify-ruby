@@ -191,6 +191,9 @@ class TCPSocket
     end
     Socksify::debug_debug "Waiting for authentication reply"
     auth_reply = recv(2)
+    if auth_reply.empty?
+      raise SOCKSError.new("Server doesn't reply authentication")
+    end
     if auth_reply[0..0] != "\004" and auth_reply[0..0] != "\005"
       raise SOCKSError.new("SOCKS version #{auth_reply[0..0]} not supported")
     end
@@ -261,6 +264,9 @@ class TCPSocket
     Socksify::debug_debug "Waiting for SOCKS reply"
     if @@socks_version == "5"
       connect_reply = recv(4)
+      if connect_reply.empty?
+        raise SOCKSError.new("Server doesn't reply")
+      end
       Socksify::debug_debug connect_reply.unpack "H*"
       if connect_reply[0..0] != "\005"
         raise SOCKSError.new("SOCKS version #{connect_reply[0..0]} is not 5")
