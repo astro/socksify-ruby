@@ -140,7 +140,7 @@ class SocksifyTest < Test::Unit::TestCase
   def test_resolve
     enable_socks
 
-    assert_equal("87.106.131.203", Socksify::resolve("spaceboyz.net"))
+    assert_equal("8.8.8.8", Socksify::resolve("google-public-dns-a.google.com"))
 
     assert_raise SOCKSError::HostUnreachable do
       Socksify::resolve("nonexistent.spaceboyz.net")
@@ -150,7 +150,7 @@ class SocksifyTest < Test::Unit::TestCase
   def test_resolve_reverse
     enable_socks
 
-    assert_equal("spaceboyz.net", Socksify::resolve("87.106.131.203"))
+    assert_equal("google-public-dns-a.google.com", Socksify::resolve("8.8.8.8"))
 
     assert_raise SOCKSError::HostUnreachable do
       Socksify::resolve("0.0.0.0")
