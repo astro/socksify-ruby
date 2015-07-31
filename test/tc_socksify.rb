@@ -108,7 +108,7 @@ class SocksifyTest < Test::Unit::TestCase
   end
 
   def internet_yandex_com_ip(http_klass = Net::HTTP)
-    parse_internet_yandex_com_response get_http(http_klass, 'https://213.180.204.248/', 'internet.yandex.com') # "internet.yandex.com"
+    parse_internet_yandex_com_response get_http(http_klass, 'https://213.180.204.62/internet', 'yandex.com') # "http://yandex.com/internet"
   end
 
   def parse_check_response(body)
@@ -129,10 +129,10 @@ class SocksifyTest < Test::Unit::TestCase
   end
 
   def parse_internet_yandex_com_response(body)
-    if body =~ /My IPv4: (\d+\.\d+\.\d+\.\d+)/
+    if body =~ /<strong>IP-[^<]*<\/strong>: (\d+\.\d+\.\d+\.\d+)/
       ip = $1
     else
-      raise 'Bogus response, no IP'
+      raise 'Bogus response, no IP'+"\n"+body.inspect
     end
     ip
   end
