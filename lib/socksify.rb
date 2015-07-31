@@ -220,6 +220,7 @@ class TCPSocket
 
   # Connect
   def socks_connect(host, port)
+    port = Socket.getservbyname(port) if port.is_a?(String)
     Socksify::debug_debug "Sending destination address"
     write TCPSocket.socks_version
     Socksify::debug_debug TCPSocket.socks_version.unpack "H*"

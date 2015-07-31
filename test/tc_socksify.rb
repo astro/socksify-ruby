@@ -41,6 +41,20 @@ class SocksifyTest < Test::Unit::TestCase
     assert(ip_direct != ip_socks)
   end
 
+  def test_check_tor_with_service_as_a_string
+    disable_socks
+
+    is_tor_direct, ip_direct = check_tor_with_service_as_string
+    assert_equal(false, is_tor_direct)
+
+    enable_socks
+
+    is_tor_socks, ip_socks = check_tor_with_service_as_string
+    assert_equal(true, is_tor_socks)
+
+    assert(ip_direct != ip_socks)
+  end
+
   def test_check_tor_via_net_http
     disable_socks
 
@@ -89,13 +103,12 @@ class SocksifyTest < Test::Unit::TestCase
     assert(ip_direct == ip_socks_ignored)
   end
 
-  def get_http(http_klass, url, host_header)
-    uri = URI(url)
+  def _get_http(http_klass, scheme, host, port, path, host_header)
     body = nil
-    http_klass.start(uri.host, uri.port,
-                     :use_ssl => uri.scheme == 'https',
+    http_klass.start(host, port,
+                     :use_ssl => scheme == 'https',
                      :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
-      req = Net::HTTP::Get.new uri.request_uri
+      req = Net::HTTP::Get.new path
       req['Host'] = host_header
       req['User-Agent'] = "ruby-socksify test"
       body = http.request(req).body
@@ -103,8 +116,17 @@ class SocksifyTest < Test::Unit::TestCase
     body
   end
 
+  def get_http(http_klass, url, host_header)
+    uri = URI(url)
+    _get_http(http_klass, uri.scheme, uri.host, uri.port, uri.request_uri, host_header)
+  end
+
   def check_tor(http_klass = Net::HTTP)
     parse_check_response get_http(http_klass, 'https://check.torproject.org/', 'check.torproject.org')
+  end
+
+  def check_tor_with_service_as_string(http_klass = Net::HTTP)
+    parse_check_response _get_http(http_klass, 'https', 'check.torproject.org', 'https', '/', 'check.torproject.org')
   end
 
   def internet_yandex_com_ip(http_klass = Net::HTTP)
