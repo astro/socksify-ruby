@@ -7,6 +7,7 @@ spec = Gem::Specification.new do |s|
   s.version = "1.7.0"
   s.summary = "Redirect all TCPSockets through a SOCKS5 proxy"
   s.authors = ["Stephan Maka", "Andrey Kouznetsov", "Christopher Thorpe", "Musy Bite", "Yuichi Tateno", "David Dollar"]
+  s.licenses = ['ruby', 'GPLv3']
   s.email = "stephan@spaceboyz.net"
   s.homepage = "http://socksify.rubyforge.org/"
   s.rubyforge_project = 'socksify'
