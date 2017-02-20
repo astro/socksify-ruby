@@ -21,7 +21,7 @@ require 'net/http'
 
 module Net
   class HTTP
-    def self.SOCKSProxy(p_host, p_port)
+    def self.SOCKSProxy(p_host, p_port, p_username = nil, p_password = nil)
       delta = SOCKSProxyDelta
       proxyclass = Class.new(self)
       proxyclass.send(:include, delta)
@@ -31,6 +31,8 @@ module Net
         @socks_server = p_host
         @socks_port = p_port
       }
+      TCPSocket.socks_username = p_username
+      TCPSocket.socks_password = p_password
       proxyclass
     end
 
