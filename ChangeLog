@@ -59,3 +59,10 @@ authentication
   (thanks to Bachue Zhou)
 * Fix unused variable warning
   (thanks to Florin Asavoaie)
+
+2017-02-24
+SOCKSify Ruby 1.7.1
+===================
+* Send requests in one call
+  For compatibility with shadowsocks <=3.0.3
+  (thanks to Yilin Chen)
