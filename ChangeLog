@@ -66,3 +66,10 @@ SOCKSify Ruby 1.7.1
 * Send requests in one call
   For compatibility with shadowsocks <=3.0.3
   (thanks to Yilin Chen)
+
+unreleased
+SOCKSify Ruby 1.7.2
+===================
+* Fix Socksify::debug = false
+  Previously, debug was enabled if any value was assigned to Socksify::debug
+  (thanks to Dennis Blommesteijn)
