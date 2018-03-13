@@ -132,10 +132,11 @@ class TCPSocket
   end
 
   class SOCKSConnectionPeerAddress < String
-    attr_reader :socks_server, :socks_port
+    attr_reader :socks_server, :socks_port, :socks_username, :socks_password
 
-    def initialize(socks_server, socks_port, peer_host)
+    def initialize(socks_server, socks_port, peer_host, socks_username = nil, socks_password = nil)
       @socks_server, @socks_port = socks_server, socks_port
+      @socks_username, @socks_password = socks_username, socks_password
       super peer_host
     end
 
@@ -158,17 +159,21 @@ class TCPSocket
       socks_port = socks_peer.socks_port
       socks_ignores = []
       host = socks_peer.peer_host
+      socks_username = socks_peer.socks_username
+      socks_password = socks_peer.socks_password
     else
       socks_server = self.class.socks_server
       socks_port = self.class.socks_port
       socks_ignores = self.class.socks_ignores
+      socks_username = self.class.socks_username
+      socks_password = self.class.socks_password
     end
 
     if socks_server and socks_port and not socks_ignores.include?(host)
       Socksify::debug_notice "Connecting to SOCKS server #{socks_server}:#{socks_port}"
       initialize_tcp socks_server, socks_port
 
-      socks_authenticate unless @@socks_version =~ /^4/
+      socks_authenticate(socks_username, socks_password) unless @@socks_version =~ /^4/
 
       if host
         socks_connect(host, port)
@@ -181,8 +186,8 @@ class TCPSocket
   end
 
   # Authentication
-  def socks_authenticate
-    if self.class.socks_username || self.class.socks_password
+  def socks_authenticate(socks_username, socks_password)
+    if socks_username || socks_password
       Socksify::debug_debug "Sending username/password authentication"
       write "\005\001\002"
     else
@@ -197,15 +202,15 @@ class TCPSocket
     if auth_reply[0..0] != "\004" and auth_reply[0..0] != "\005"
       raise SOCKSError.new("SOCKS version #{auth_reply[0..0]} not supported")
     end
-    if self.class.socks_username || self.class.socks_password
+    if socks_username || socks_password
       if auth_reply[1..1] != "\002"
         raise SOCKSError.new("SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported")
       end
       auth = "\001"
-      auth += self.class.socks_username.to_s.length.chr
-      auth += self.class.socks_username.to_s
-      auth += self.class.socks_password.to_s.length.chr
-      auth += self.class.socks_password.to_s
+      auth += socks_username.to_s.length.chr
+      auth += socks_username.to_s
+      auth += socks_password.to_s.length.chr
+      auth += socks_password.to_s
       write auth
       auth_reply = recv(2)
       if auth_reply[1..1] != "\000"

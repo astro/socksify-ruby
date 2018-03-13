@@ -73,3 +73,5 @@ SOCKSify Ruby 1.7.2
 * Fix Socksify::debug = false
   Previously, debug was enabled if any value was assigned to Socksify::debug
   (thanks to Dennis Blommesteijn)
+* Authentication support added to Net::HTTP.SOCKSProxy
+  (thanks to @ojab)
