@@ -21,16 +21,20 @@ require_relative 'ruby3net_http_connectable'
 module Net
   # patched class
   class HTTP
-    def self.socks_proxy(p_host, p_port)
+    def self.socks_proxy(p_host, p_port, p_username = nil, p_password = nil)
       proxyclass = Class.new(self)
       proxyclass.send(:include, SOCKSProxyDelta)
       proxyclass.module_eval do
         include Ruby3NetHTTPConnectable if RUBY_VERSION.to_f > 3.0 # patch #connect method
         include SOCKSProxyDelta::InstanceMethods
         extend SOCKSProxyDelta::ClassMethods
+
         @socks_server = p_host
         @socks_port = p_port
+        @socks_username = p_username
+        @socks_password = p_password
       end
+
       proxyclass
     end
 
@@ -41,13 +45,18 @@ module Net
     module SOCKSProxyDelta
       # class methods
       module ClassMethods
-        attr_reader :socks_server, :socks_port
+        attr_reader :socks_server, :socks_port,
+                    :socks_username, :socks_password
       end
 
       # instance methods - no long supports Ruby < 2
       module InstanceMethods
         def address
-          TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, @address)
+          TCPSocket::SOCKSConnectionPeerAddress.new(
+            self.class.socks_server, self.class.socks_port,
+            @address,
+            self.class.socks_username, self.class.socks_password
+          )
         end
       end
     end

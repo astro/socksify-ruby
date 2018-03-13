@@ -105,6 +105,14 @@ end
 	explicitly or use <code>Net::HTTP</code> directly.
       </p>
 
+      <p>
+	<code>Net::HTTP.SOCKSProxy</code> also supports SOCKS authentication:
+      </p>
+      <pre>
+Net::HTTP.SOCKSProxy('127.0.0.1', 9050, 'username', 'p4ssw0rd')
+      </pre>
+
+
       <h3>Resolve addresses via SOCKS</h3>
       <pre>Socksify::resolve("spaceboyz.net")
 # => "87.106.131.203"</pre>
