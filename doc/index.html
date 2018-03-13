@@ -77,6 +77,12 @@ Socksify::proxy("127.0.0.1", 9050) {
 </pre>
       </p>
 
+      <p>
+      Please note: <b>socksify is not thread-safe</b> when used this way!
+      <code>socks_server</code> and <code>socks_port</code> are stored in class
+      <code>@@</code>-variables, and applied to all threads and fibers of application.
+      </p>
+
       <h3>Use Net::HTTP explicitly via SOCKS</h3>
       <p>
 	Require the additional library <code>socksify/http</code>
