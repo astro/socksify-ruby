@@ -21,7 +21,7 @@ require 'net/http'
 
 module Net
   class HTTP
-    def self.SOCKSProxy(p_host, p_port)
+    def self.SOCKSProxy(p_host, p_port, p_username = nil, p_password = nil)
       delta = SOCKSProxyDelta
       proxyclass = Class.new(self)
       proxyclass.send(:include, delta)
@@ -30,6 +30,8 @@ module Net
         extend delta::ClassMethods
         @socks_server = p_host
         @socks_port = p_port
+        @socks_username = p_username
+        @socks_password = p_password
       }
       proxyclass
     end
@@ -43,16 +45,24 @@ module Net
         def socks_port
           @socks_port
         end
+
+        def socks_username
+          @socks_username
+        end
+
+        def socks_password
+          @socks_password
+        end
       end
 
       module InstanceMethods
         if RUBY_VERSION[0..0] >= '2'
           def address
-            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, @address)
+            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, @address, self.class.socks_username, self.class.socks_password)
           end
         else
           def conn_address
-            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, address())
+            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, address(), self.class.socks_username, self.class.socks_password)
           end
         end
       end
