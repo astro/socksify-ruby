@@ -4,7 +4,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   s.name = 'socksify'
-  s.version = "1.7.1"
+  s.version = "1.7.2"
   s.summary = "Redirect all TCPSockets through a SOCKS5 proxy"
   s.authors = ["Stephan Maka", "Andrey Kouznetsov", "Christopher Thorpe", "Musy Bite", "Yuichi Tateno", "David Dollar"]
   s.licenses = ['Ruby', 'GPL-3.0']
