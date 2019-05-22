@@ -19,7 +19,9 @@ module Socksify
     def self::to_s
       new.to_s
     end
-  
+    
+    def num; 0; end  
+    
     def to_s
       "\e[1m\e[#{num}m"
     end
