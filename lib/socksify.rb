@@ -268,6 +268,11 @@ class TCPSocket
       end
     end
     write [port].pack('n') if TCPSocket::socks_version == "5"
+    
+    # Adhoc fix for version 4 (not 4a) as of https://en.wikipedia.org/wiki/SOCKS#SOCKS4 :
+    # field 5: the user ID string, variable length, terminated with a null (0x00):
+    # Fix by sendind a dummy user id
+    write "\000" if @@socks_version =~ /^4/ 
 
     socks_receive_reply
     Socksify::debug_notice "Connected to #{host}:#{port} over SOCKS"
