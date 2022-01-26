@@ -10,7 +10,6 @@ spec = Gem::Specification.new do |s|
   s.licenses = ['Ruby', 'GPL-3.0']
   s.email = "stephan@spaceboyz.net"
   s.homepage = "http://socksify.rubyforge.org/"
-  s.rubyforge_project = 'socksify'
   s.files = %w{COPYING}
   s.files += Dir.glob("lib/**/*")
   s.files += Dir.glob("bin/**/*")
