@@ -151,7 +151,8 @@ class SocksifyTest < Test::Unit::TestCase
   end
 
   def parse_internet_yandex_com_response(body)
-    if body =~ /<strong>IP-[^<]*<\/strong>: (\d+\.\d+\.\d+\.\d+)/
+    # if body =~ /<strong>IP-[^<]*<\/strong>: (\d+\.\d+\.\d+\.\d+)/
+    if body =~ /<div>(\d+\.\d+\.\d+\.\d+)<\/div>/
       ip = $1
     else
       raise 'Bogus response, no IP'+"\n"+body.inspect
@@ -172,7 +173,7 @@ class SocksifyTest < Test::Unit::TestCase
   def test_resolve_reverse
     enable_socks
 
-    assert_equal("google-public-dns-a.google.com", Socksify::resolve("8.8.8.8"))
+    assert_equal("dns.google", Socksify::resolve("8.8.8.8"))
 
     assert_raise SOCKSError::HostUnreachable do
       Socksify::resolve("0.0.0.0")
