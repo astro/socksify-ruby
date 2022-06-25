@@ -1,0 +1,43 @@
+---
+name: Ruby
+
+on:
+  push:
+    branches: '*'
+  pull_request:
+    branches: '*'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ['2.6', '2.7', '3.0']
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install and setup tor
+        run: |
+          sudo apt-get install -y tor
+          tor --version
+          sudo sh -c 'echo SOCKSPort 9050 > /etc/tor/torrc'
+          sudo sh -c 'echo ControlPort 9051 >> /etc/tor/torrc'
+          export HashedControlPassword=$(tor --quiet --hash-password "")
+          sudo sh -c 'echo "HashedControlPassword $HashedControlPassword" >> /etc/tor/torrc'
+          sudo sh -c 'cat /etc/tor/torrc'
+          sudo service tor start
+          pidof tor
+
+      - name: Set up Ruby
+        # Automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
+        # change this to (see https://github.com/ruby/setup-ruby#versioning):
+        # uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@2b019609e2b0f1ea1a2bc8ca11cb82ab46ada124
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+      - name: Run tests
+        run: ruby test/tc_socksify.rb
