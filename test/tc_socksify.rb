@@ -1,30 +1,15 @@
 #!/usr/bin/ruby
 
-require 'test/unit'
-require 'net/http'
-require 'uri'
+require_relative 'test_helper'
 
-$:.unshift "#{File::dirname($0)}/../lib/"
-require 'socksify'
-require 'socksify/http'
-
-
+# test class
 class SocksifyTest < Test::Unit::TestCase
+  include HelperMethods
+  include TorProjectHelperMethods
+  include YandexHelperMethods
+
   def setup
-    Socksify::debug = true
-  end
-
-  def disable_socks
-    TCPSocket.socks_server = nil
-    TCPSocket.socks_port = nil
-  end
-  def enable_socks
-    TCPSocket.socks_server = "127.0.0.1"
-    TCPSocket.socks_port = 9050
-  end
-
-  def http_tor_proxy
-    Net::HTTP::SOCKSProxy("127.0.0.1", 9050)
+    Socksify.debug = true
   end
 
   def test_check_tor
@@ -103,114 +88,54 @@ class SocksifyTest < Test::Unit::TestCase
     assert(ip_direct == ip_socks_ignored)
   end
 
-  def _get_http(http_klass, scheme, host, port, path, host_header)
-    body = nil
-    http_klass.start(host, port,
-                     :use_ssl => scheme == 'https',
-                     :verify_mode => OpenSSL::SSL::VERIFY_NONE) do |http|
-      req = Net::HTTP::Get.new path
-      req['Host'] = host_header
-      req['User-Agent'] = "ruby-socksify test"
-      body = http.request(req).body
-    end
-    body
-  end
-
-  def get_http(http_klass, url, host_header)
-    uri = URI(url)
-    _get_http(http_klass, uri.scheme, uri.host, uri.port, uri.request_uri, host_header)
-  end
-
-  def check_tor(http_klass = Net::HTTP)
-    parse_check_response get_http(http_klass, 'https://check.torproject.org/', 'check.torproject.org')
-  end
-
-  def check_tor_with_service_as_string(http_klass = Net::HTTP)
-    parse_check_response _get_http(http_klass, 'https', 'check.torproject.org', 'https', '/', 'check.torproject.org')
-  end
-
-  def internet_yandex_com_ip(http_klass = Net::HTTP)
-    parse_internet_yandex_com_response get_http(http_klass, 'https://213.180.204.62/internet', 'yandex.com') # "http://yandex.com/internet"
-  end
-
-  def parse_check_response(body)
-    if body.include? 'This browser is configured to use Tor.'
-      is_tor = true
-    elsif body.include? 'You are not using Tor.'
-      is_tor = false
-    else
-      raise 'Bogus response'
-    end
-
-    if body =~ /Your IP address appears to be:\s*<strong>(\d+\.\d+\.\d+\.\d+)<\/strong>/
-      ip = $1
-    else
-      raise 'Bogus response, no IP'
-    end
-    [is_tor, ip]
-  end
-
-  def parse_internet_yandex_com_response(body)
-    # if body =~ /<strong>IP-[^<]*<\/strong>: (\d+\.\d+\.\d+\.\d+)/
-    if body =~ /<div>(\d+\.\d+\.\d+\.\d+)<\/div>/
-      ip = $1
-    else
-      raise 'Bogus response, no IP'+"\n"+body.inspect
-    end
-    ip
-  end
-
   def test_resolve
     enable_socks
 
-    assert_equal("8.8.8.8", Socksify::resolve("google-public-dns-a.google.com"))
+    assert_includes ['8.8.8.8', '8.8.4.4'], Socksify.resolve('dns.google.com')
 
     assert_raise SOCKSError::HostUnreachable do
-      Socksify::resolve("nonexistent.spaceboyz.net")
+      Socksify.resolve('nonexistent.spaceboyz.net')
     end
   end
 
   def test_resolve_reverse
     enable_socks
 
-    assert_equal("dns.google", Socksify::resolve("8.8.8.8"))
+    assert_equal('dns.google', Socksify.resolve('8.8.8.8'))
 
     assert_raise SOCKSError::HostUnreachable do
-      Socksify::resolve("0.0.0.0")
+      Socksify.resolve('0.0.0.0')
     end
   end
 
   def test_proxy
-    enable_socks 
+    enable_socks
 
     default_server = TCPSocket.socks_server
     default_port = TCPSocket.socks_port
 
-    Socksify.proxy('localhost.example.com', 60001) {
+    Socksify.proxy('localhost.example.com', 60_001) do
       assert_equal TCPSocket.socks_server, 'localhost.example.com'
-      assert_equal TCPSocket.socks_port, 60001
-    }
+      assert_equal TCPSocket.socks_port, 60_001
+    end
 
     assert_equal TCPSocket.socks_server, default_server
     assert_equal TCPSocket.socks_port, default_port
   end
 
   def test_proxy_failback
-    enable_socks 
+    enable_socks
 
     default_server = TCPSocket.socks_server
     default_port = TCPSocket.socks_port
 
     assert_raise StandardError do
-      Socksify.proxy('localhost.example.com', 60001) {
-        raise StandardError.new('error')
-      }
+      Socksify.proxy('localhost.example.com', 60_001) do
+        raise StandardError, 'error'
+      end
     end
 
     assert_equal TCPSocket.socks_server, default_server
     assert_equal TCPSocket.socks_port, default_port
   end
 end
-
-
-

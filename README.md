@@ -25,7 +25,7 @@ Usage
 
 ### Redirect all TCP connections of a Ruby program
 
-Run a Ruby script with redirected TCP through a local [Tor](https://web.archive.org/web/20170127085053/http://www.torproject.org/) anonymizer:
+Run a Ruby script with redirected TCP through a local [Tor](https://www.torproject.org/) anonymizer:
 
 `$ socksify_ruby localhost 9050 script.rb`
 
