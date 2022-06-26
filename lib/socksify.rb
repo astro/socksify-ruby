@@ -19,7 +19,7 @@
 require 'socket'
 require 'resolv'
 require 'socksify/debug'
-require 'socksify/tcpsocket_'
+require 'socksify/tcpsocket'
 
 class SOCKSError < RuntimeError
   def initialize(msg)
