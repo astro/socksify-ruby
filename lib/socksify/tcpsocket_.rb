@@ -1,9 +1,9 @@
 # monkey patch
 class TCPSocket
-  @@socks_version ||= "5"
+  @@socks_version ||= '5'
 
   def self.socks_version
-    (@@socks_version == "4a" || @@socks_version == "4") ? "\004" : "\005"
+    @@socks_version == '4a' || @@socks_version == '4' ? "\004" : "\005"
   end
 
   def self.socks_version=(version)
@@ -43,7 +43,7 @@ class TCPSocket
   end
 
   def self.socks_ignores
-    @@socks_ignores ||= %w(localhost)
+    @@socks_ignores ||= %w[localhost]
   end
 
   def self.socks_ignores=(ignores)
@@ -59,7 +59,7 @@ class TCPSocket
     end
 
     def inspect
-      "#{to_s} (via #{@socks_server}:#{@socks_port})"
+      "#{self} (via #{@socks_server}:#{@socks_port})"
     end
 
     def peer_host
@@ -67,7 +67,7 @@ class TCPSocket
     end
   end
 
-  alias :initialize_tcp :initialize
+  alias initialize_tcp initialize
 
   # See http://tools.ietf.org/html/rfc1928
   def initialize(host = nil, port = 0, local_host = nil, local_port = nil)
@@ -83,7 +83,7 @@ class TCPSocket
       socks_ignores = self.class.socks_ignores
     end
 
-    if socks_server and socks_port and not socks_ignores.include?(host)
+    if socks_server && socks_port && !socks_ignores.include?(host)
       Socksify.debug_notice "Connecting to SOCKS server #{socks_server}:#{socks_port}"
       initialize_tcp socks_server, socks_port
 
@@ -100,23 +100,23 @@ class TCPSocket
   # Authentication
   def socks_authenticate
     if self.class.socks_username || self.class.socks_password
-      Socksify.debug_debug "Sending username/password authentication"
+      Socksify.debug_debug 'Sending username/password authentication'
       write "\005\001\002"
     else
-      Socksify.debug_debug "Sending no authentication"
+      Socksify.debug_debug 'Sending no authentication'
       write "\005\001\000"
     end
-    Socksify.debug_debug "Waiting for authentication reply"
+    Socksify.debug_debug 'Waiting for authentication reply'
     auth_reply = recv(2)
-    raise SOCKSError.new("Server doesn't reply authentication") if auth_reply.empty?
+    raise SOCKSError, "Server doesn't reply authentication" if auth_reply.empty?
 
     if auth_reply[0..0] != "\004" && auth_reply[0..0] != "\005"
-      raise SOCKSError.new("SOCKS version #{auth_reply[0..0]} not supported")
+      raise SOCKSError, "SOCKS version #{auth_reply[0..0]} not supported"
     end
 
     if self.class.socks_username || self.class.socks_password
       if auth_reply[1..1] != "\002"
-        raise SOCKSError.new("SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported")
+        raise SOCKSError, "SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported"
       end
 
       auth = "\001"
@@ -126,11 +126,9 @@ class TCPSocket
       auth += self.class.socks_password.to_s
       write auth
       auth_reply = recv(2)
-      if auth_reply[1..1] != "\000"
-        raise SOCKSError.new("SOCKS authentication failed")
-      end
+      raise SOCKSError, 'SOCKS authentication failed' if auth_reply[1..1] != "\000"
     elsif auth_reply[1..1] != "\000"
-      raise SOCKSError.new("SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported")
+      raise SOCKSError, "SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported"
 
     end
   end
@@ -139,29 +137,29 @@ class TCPSocket
   def socks_connect(host, port)
     port = Socket.getservbyname(port) if port.is_a?(String)
     req = String.new
-    Socksify.debug_debug "Sending destination address"
+    Socksify.debug_debug 'Sending destination address'
     req << TCPSocket.socks_version
-    Socksify.debug_debug TCPSocket.socks_version.unpack "H*"
+    Socksify.debug_debug TCPSocket.socks_version.unpack 'H*'
     req << "\001"
-    req << "\000" if @@socks_version == "5"
+    req << "\000" if @@socks_version == '5'
     req << [port].pack('n') if @@socks_version =~ /^4/
 
-    host = Resolv::DNS.new.getaddress(host).to_s if @@socks_version == "4"
+    host = Resolv::DNS.new.getaddress(host).to_s if @@socks_version == '4'
 
-    Socksify::debug_debug host
+    Socksify.debug_debug host
     if host =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/ # to IPv4 address
-      req << "\001" if @@socks_version == "5"
-      _ip = [$1.to_i,
-             $2.to_i,
-             $3.to_i,
-             $4.to_i
-            ].pack('CCCC')
-      req << _ip
-    elsif host =~ /^[:0-9a-f]+$/  # to IPv6 address
-      raise "TCP/IPv6 over SOCKS is not yet supported (inet_pton missing in Ruby & not supported by Tor"
+      req << "\001" if @@socks_version == '5'
+      ip = [Regexp.last_match(1).to_i,
+            Regexp.last_match(2).to_i,
+            Regexp.last_match(3).to_i,
+            Regexp.last_match(4).to_i].pack('CCCC')
+      req << ip
+    elsif host =~ /^[:0-9a-f]+$/ # to IPv6 address
+      raise 'TCP/IPv6 over SOCKS is not yet supported (inet_pton missing in Ruby & not supported by Tor'
       req << "\004" # UNREACHABLE
-    elsif @@socks_version == "5" # to hostname
-      req << "\003" + [host.size].pack('C') + host
+    elsif @@socks_version == '5' # to hostname
+      # req << "\003" + [host.size].pack('C') + host
+      req << "\003#{[host.size].pack('C')}#{host}"
     else
       req << "\000\000\000\001"
       req << "\007\000"
@@ -169,7 +167,7 @@ class TCPSocket
       req << host
       req << "\000"
     end
-    req << [port].pack('n') if @@socks_version == "5"
+    req << [port].pack('n') if @@socks_version == '5'
     write req
 
     socks_receive_reply
@@ -178,23 +176,16 @@ class TCPSocket
 
   # returns [bind_addr: String, bind_port: Fixnum]
   def socks_receive_reply
-    Socksify.debug_debug "Waiting for SOCKS reply"
-    if @@socks_version == "5"
+    Socksify.debug_debug 'Waiting for SOCKS reply'
+    if @@socks_version == '5'
       connect_reply = recv(4)
-      if connect_reply.empty?
-        raise SOCKSError.new("Server doesn't reply")
-      end
+      raise SOCKSError, "Server doesn't reply" if connect_reply.empty?
 
-      Socksify.debug_debug connect_reply.unpack "H*"
-      if connect_reply[0..0] != "\005"
-        raise SOCKSError.new("SOCKS version #{connect_reply[0..0]} is not 5")
-      end
+      Socksify.debug_debug connect_reply.unpack 'H*'
+      raise SOCKSError, "SOCKS version #{connect_reply[0..0]} is not 5" if connect_reply[0..0] != "\005"
+      raise SOCKSError.for_response_code(connect_reply.bytes.to_a[1]) if connect_reply[1..1] != "\000"
 
-      if connect_reply[1..1] != "\000"
-        raise SOCKSError.for_response_code(connect_reply.bytes.to_a[1])
-      end
-
-      Socksify.debug_debug "Waiting for bind_addr"
+      Socksify.debug_debug 'Waiting for bind_addr'
       bind_addr_len = case connect_reply[3..3]
                       when "\001"
                         4
@@ -213,9 +204,9 @@ class TCPSocket
                     bind_addr_s
                   when "\004"  # Untested!
                     i = 0
-                    ip6 = ""
+                    ip6 = ''
                     bind_addr_s.each_byte do |b|
-                      ip6 += ":" if i > 0 && i.even?
+                      ip6 += ':' if i > 0 && i.even?
                       i += 1
                       ip6 += b.to_s(16).rjust(2, '0')
                     end
@@ -226,7 +217,7 @@ class TCPSocket
       connect_reply = recv(8)
       unless connect_reply[0] == "\000" && connect_reply[1] == "\x5A"
         Socksify.debug_debug connect_reply.unpack 'H'
-        raise SOCKSError.new("Failed while connecting througth socks")
+        raise SOCKSError, 'Failed while connecting througth socks'
 
       end
     end
