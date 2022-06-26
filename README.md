@@ -25,7 +25,7 @@ Usage
 
 ### Redirect all TCP connections of a Ruby program
 
-Run a Ruby script with redirected TCP through a local [Tor](https://web.archive.org/web/20170127085053/http://www.torproject.org/) anonymizer:
+Run a Ruby script with redirected TCP through a local [Tor](https://www.torproject.org/) anonymizer:
 
 `$ socksify_ruby localhost 9050 script.rb`
 
@@ -69,9 +69,9 @@ Socksify::resolve("spaceboyz.net")
 
 A tor proxy is required before running the tests. Install tor from your usual package manager, check it is running with `pidof tor` then run the tests with:
 
-`ruby test/tc_socksify.rb`
+`ruby test/test_socksify.rb` (uses minitest, `gem install minitest` if you don't have it)
 
-Colorful diagnostic messages can be enabled via:
+Colorful diagnostic messages can be enabled via (on by default):
 
 `Socksify::debug = true`
 

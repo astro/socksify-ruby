@@ -40,4 +40,4 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
       - name: Run tests
-        run: ruby test/tc_socksify.rb
+        run: ruby test/test_socksify.rb
