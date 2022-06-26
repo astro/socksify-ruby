@@ -3,53 +3,53 @@
 require_relative 'test_helper'
 
 # test class
-class SocksifyTest < Test::Unit::TestCase
+class SocksifyTest < Minitest::Test
   include HelperMethods
   include TorProjectHelperMethods
   include YandexHelperMethods
 
-  def setup
-    Socksify.debug = true
+  def self.test_order
+    :alpha # until state between tests is fixed
   end
 
   def test_check_tor
     disable_socks
 
     is_tor_direct, ip_direct = check_tor
-    assert_equal(false, is_tor_direct)
+    refute is_tor_direct
 
     enable_socks
 
     is_tor_socks, ip_socks = check_tor
-    assert_equal(true, is_tor_socks)
+    assert is_tor_socks
 
-    assert(ip_direct != ip_socks)
+    refute_equal ip_direct, ip_socks
   end
 
   def test_check_tor_with_service_as_a_string
     disable_socks
 
     is_tor_direct, ip_direct = check_tor_with_service_as_string
-    assert_equal(false, is_tor_direct)
+    refute is_tor_direct
 
     enable_socks
 
     is_tor_socks, ip_socks = check_tor_with_service_as_string
-    assert_equal(true, is_tor_socks)
+    assert is_tor_socks
 
-    assert(ip_direct != ip_socks)
+    refute_equal ip_direct, ip_socks
   end
 
   def test_check_tor_via_net_http
     disable_socks
 
     tor_direct, ip_direct = check_tor
-    assert_equal(false, tor_direct)
+    refute tor_direct
 
     tor_socks, ip_socks = check_tor(http_tor_proxy)
-    assert_equal(true, tor_socks)
+    assert tor_socks
 
-    assert(ip_direct != ip_socks)
+    refute_equal ip_direct, ip_socks
   end
 
   def test_connect_to_ip
@@ -61,7 +61,7 @@ class SocksifyTest < Test::Unit::TestCase
 
     ip_socks = internet_yandex_com_ip
 
-    assert(ip_direct != ip_socks)
+    refute_equal ip_direct, ip_socks
   end
 
   def test_connect_to_ip_via_net_http
@@ -70,22 +70,22 @@ class SocksifyTest < Test::Unit::TestCase
     ip_direct = internet_yandex_com_ip
     ip_socks = internet_yandex_com_ip(http_tor_proxy)
 
-    assert(ip_direct != ip_socks)
+    refute_equal ip_direct, ip_socks
   end
 
   def test_ignores
     disable_socks
 
     tor_direct, ip_direct = check_tor
-    assert_equal(false, tor_direct)
+    refute tor_direct
 
     enable_socks
     TCPSocket.socks_ignores << 'check.torproject.org'
 
     tor_socks_ignored, ip_socks_ignored = check_tor
-    assert_equal(false, tor_socks_ignored)
+    refute tor_socks_ignored
 
-    assert(ip_direct == ip_socks_ignored)
+    assert_equal ip_direct, ip_socks_ignored
   end
 
   def test_resolve
@@ -93,7 +93,7 @@ class SocksifyTest < Test::Unit::TestCase
 
     assert_includes ['8.8.8.8', '8.8.4.4'], Socksify.resolve('dns.google.com')
 
-    assert_raise SOCKSError::HostUnreachable do
+    assert_raises SOCKSError::HostUnreachable do
       Socksify.resolve('nonexistent.spaceboyz.net')
     end
   end
@@ -103,7 +103,7 @@ class SocksifyTest < Test::Unit::TestCase
 
     assert_equal('dns.google', Socksify.resolve('8.8.8.8'))
 
-    assert_raise SOCKSError::HostUnreachable do
+    assert_raises SOCKSError::HostUnreachable do
       Socksify.resolve('0.0.0.0')
     end
   end
@@ -115,12 +115,11 @@ class SocksifyTest < Test::Unit::TestCase
     default_port = TCPSocket.socks_port
 
     Socksify.proxy('localhost.example.com', 60_001) do
-      assert_equal TCPSocket.socks_server, 'localhost.example.com'
-      assert_equal TCPSocket.socks_port, 60_001
+      assert_equal 'localhost.example.com', TCPSocket.socks_server
+      assert_equal 60_001, TCPSocket.socks_port
     end
 
-    assert_equal TCPSocket.socks_server, default_server
-    assert_equal TCPSocket.socks_port, default_port
+    assert_equal [TCPSocket.socks_server, TCPSocket.socks_port], [default_server, default_port]
   end
 
   def test_proxy_failback
@@ -129,7 +128,7 @@ class SocksifyTest < Test::Unit::TestCase
     default_server = TCPSocket.socks_server
     default_port = TCPSocket.socks_port
 
-    assert_raise StandardError do
+    assert_raises StandardError do
       Socksify.proxy('localhost.example.com', 60_001) do
         raise StandardError, 'error'
       end

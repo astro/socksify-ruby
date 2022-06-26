@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'net/http'
 require 'uri'
 
-$LOAD_PATH.unshift "#{__dir__}/../lib/"
+$LOAD_PATH.unshift File.expand_path("#{__dir__}/../lib")
 
 require 'socksify'
 require 'socksify/http'
+
+Socksify.debug = true
 
 module HelperMethods
   def disable_socks
