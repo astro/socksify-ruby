@@ -33,23 +33,23 @@ Run a Ruby script with redirected TCP through a local [Tor](https://www.torproje
 
 Set up SOCKS connections for a local [Tor](https://www.torproject.org/) anonymizer, TCPSockets can be used as usual:
 
-```
+```rb
 require 'socksify'
 
-TCPSocket::socks_server = "127.0.0.1"
-TCPSocket::socks_port = 9050
+TCPSocket.socks_server = "127.0.0.1"
+TCPSocket.socks_port = 9050
 rubyforge_www = TCPSocket.new("rubyforge.org", 80)
 # => #<TCPSocket:0x...>
 ```
 
 ### Use Net::HTTP explicitly via SOCKS
 
-Require the additional library `socksify/http` and use the `Net::HTTP.SOCKSProxy` method. It is similar to `Net:HTTP.Proxy` from the Ruby standard library:
-```
+Require the additional library `socksify/http` and use the `Net::HTTP.socks_proxy` method. It is similar to `Net::HTTP.Proxy` from the Ruby standard library:
+```rb
 require 'socksify/http'
 
 uri = URI.parse('http://ipecho.net/plain')
-Net::HTTP.SOCKSProxy('127.0.0.1', 9050).start(uri.host, uri.port) do |http|
+Net::HTTP.socks_proxy('127.0.0.1', 9050).start(uri.host, uri.port) do |http|
   req = Net::HTTP::Get.new uri
   resp = http.request(req)
   puts resp.inspect
@@ -58,11 +58,11 @@ end
 # => #<Net::HTTPOK 200 OK readbody=true>
 # => <A tor exit node ip address>
 ```
-Note that `Net::HTTP.SOCKSProxy` never relies on `TCPSocket::socks_server`/`socks_port`. You should either set `SOCKSProxy` arguments explicitly or use `Net::HTTP` directly.
+Note that `Net::HTTP.socks_proxy` never relies on `TCPSocket.socks_server`/`socks_port`. You should either set `socks_proxy` arguments explicitly or use `Net::HTTP` directly.
 
 ### Resolve addresses via SOCKS
-```
-Socksify::resolve("spaceboyz.net")
+```rb
+Socksify.resolve("spaceboyz.net")
 # => "87.106.131.203"
 ```
 ### Testing and Debugging
@@ -71,10 +71,10 @@ A tor proxy is required before running the tests. Install tor from your usual pa
 
 `ruby test/test_socksify.rb` (uses minitest, `gem install minitest` if you don't have it)
 
-Colorful diagnostic messages can be enabled via (on by default):
-
-`Socksify::debug = true`
-
+Colorful diagnostic messages are enabled by default via:
+```rb
+Socksify::debug = true`
+```
 Development
 -----------
 
