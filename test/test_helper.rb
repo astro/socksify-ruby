@@ -23,7 +23,7 @@ module HelperMethods
   end
 
   def http_tor_proxy
-    Net::HTTP::SOCKSProxy('127.0.0.1', 9050)
+    Net::HTTP.socks_proxy('127.0.0.1', 9050)
   end
 
   def get_http(http_klass, url, host_header = nil)
