@@ -1,3 +1,6 @@
+[![Gem Version](https://badge.fury.io/rb/socksify.svg)](https://badge.fury.io/rb/socksify)
+[![Actions Status](https://github.com/astro/socksify-ruby/workflows/CI/badge.svg?branch=master)](https://github.com/astro/socksify-ruby/actions?query=workflow%3ACI)
+
 SOCKSify Ruby
 =============
 
@@ -82,7 +85,7 @@ The [repository](https://github.com/astro/socksify-ruby/) can be checked out wit
 
 `$ git-clone git@github.com:astro/socksify-ruby.git`
 
-Send patches via pull requests.
+Send patches via pull requests. Please run `rubcop` & correct any errors first.
 
 ### Further ideas
 

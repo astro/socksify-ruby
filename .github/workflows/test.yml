@@ -1,5 +1,5 @@
 ---
-name: Ruby
+name: CI
 
 on:
   push:
@@ -31,6 +31,10 @@ jobs:
           sudo sh -c 'cat /etc/tor/torrc'
           sudo service tor start
           pidof tor
+      - name: Install gems
+        run: |
+          sudo gem install rubocop
+          sudo gem install rubocop-minitest
 
       - name: Set up Ruby
         # Automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
@@ -40,4 +44,6 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
       - name: Run tests
-        run: ruby test/test_socksify.rb
+        run: |
+          ruby test/test_socksify.rb
+          rubocop
