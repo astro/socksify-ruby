@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.summary = 'Redirect all TCPSockets through a SOCKS5 proxy'
   s.authors = ['Stephan Maka', 'Andrey Kouznetsov', 'Christopher Thorpe', 'Musy Bite', 'Yuichi Tateno', 'David Dollar']
   s.licenses = ['Ruby', 'GPL-3.0']
-  s.required_ruby_version = ['>= 2.0', '< 3.1']
+  s.required_ruby_version = '>= 2.0'
   s.email = 'stephan@spaceboyz.net'
   s.homepage = 'https://github.com/astro/socksify-ruby'
   s.files = %w[COPYING]

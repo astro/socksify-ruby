@@ -70,7 +70,8 @@ SOCKSify Ruby 1.7.1
 unreleased
 SOCKSify Ruby 1.7.2
 ===================
-* Enforce Ruby >= 2.0, < 3.1
+* Ruby > 3.0 support for Net::HTTP.socks_proxy (was broken in v1.7.1 for Ruby 3.1)
+* TCPSocket patched methods #socks_server and #socks_port deprecated for Ruby > 3.0
 * Fix Socksify::debug = false
   Previously, debug was enabled if any value was assigned to Socksify::debug
   (thanks to Dennis Blommesteijn)

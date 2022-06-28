@@ -11,17 +11,17 @@ What is it?
 
 ### How does it work?
 
-Modifications to class `TCPSocket`:
+```rb
+require 'socksify/http'
+```
+This adds a new class method `Net::HTTP.socks_proxy` which takes the host and port address of a socks proxy. Once set, all requests will be routed via socks. This is acheived by patching a private method in `Net::HTTP`, as sadly Ruby no longer has native socks proxy support out of the box.
 
-*   Alias `initialize` as `initialize_tcp`
-*   The new `initialize` calls the old method to establish a TCP connection to the SOCKS proxy, sends the proxying destination and checks for errors
-
-Additionally, `Socksify::resolve` can be used to resolve hostnames to IPv4 addresses via SOCKS. There is also `socksify/http` enabling Net::HTTP to work via SOCKS.
+Additionally, `Socksify.resolve` can be used to resolve hostnames to IPv4 addresses via SOCKS.
 
 Installation
 ------------
 
-`$ gem install socksify` *** NOTE *** Ruby < 3.1 presently
+`$ gem install socksify`
 
 Usage
 -----
@@ -32,7 +32,7 @@ Run a Ruby script with redirected TCP through a local [Tor](https://www.torproje
 
 `$ socksify_ruby localhost 9050 script.rb`
 
-### Explicit SOCKS usage in a Ruby program *** WARNING *** may be deprecated in future releases
+### Explicit SOCKS usage in a Ruby program (Deprecated in Ruby 3.1 onwards)
 
 Set up SOCKS connections for a local [Tor](https://www.torproject.org/) anonymizer, TCPSockets can be used as usual:
 
