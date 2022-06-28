@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 if ARGV.size < 2
-  puts "Usage: #{$0} <SOCKS host> <SOCKS port> [script args ...]"
+  puts "Usage: #{$PROGRAM_NAME} <SOCKS host> <SOCKS port> [script args ...]"
   exit
 end
 
@@ -15,4 +15,3 @@ else
   require 'irb'
   IRB.start(__FILE__)
 end
-

@@ -4,8 +4,19 @@
 module Socksproxyable
   # class methods
   module ClassMethods
-    attr_reader :socks_version
-    attr_accessor :socks_server, :socks_port, :socks_username, :socks_password, :socks_ignores
+    attr_accessor :socks_server, :socks_port, :socks_username, :socks_password
+
+    def socks_version
+      @socks_version ||= '5'
+    end
+
+    def socks_ignores
+      @socks_ignores ||= %w[localhost]
+    end
+
+    def socks_ignores=(*hosts)
+      @socks_ignores = hosts
+    end
 
     def socks_version_hex
       socks_version == '4a' || socks_version == '4' ? "\004" : "\005"
@@ -14,6 +25,7 @@ module Socksproxyable
 
   # instance method #socks_authenticate
   module InstanceMethodsAuthenticate
+    # rubocop:disable Metrics
     def socks_authenticate
       if self.class.socks_username || self.class.socks_password
         Socksify.debug_debug 'Sending username/password authentication'
@@ -47,10 +59,12 @@ module Socksproxyable
         raise SOCKSError, "SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported"
       end
     end
+    # rubocop:enable Metrics
   end
 
   # instance methods #socks_connect & #socks_receive_reply
   module InstanceMethodsConnect
+    # rubocop:disable Metrics
     def socks_connect(host, port)
       port = Socket.getservbyname(port) if port.is_a?(String)
       req = String.new
@@ -82,8 +96,10 @@ module Socksproxyable
       socks_receive_reply
       Socksify.debug_notice "Connected to #{host}:#{port} over SOCKS"
     end
+    # rubocop:enable Metrics
 
     # returns [bind_addr: String, bind_port: Fixnum]
+    # rubocop:disable Metrics
     def socks_receive_reply
       Socksify.debug_debug 'Waiting for SOCKS reply'
       if self.class.socks_version == '5'
@@ -111,7 +127,7 @@ module Socksproxyable
                       bind_addr_s.bytes.to_a.join('.')
                     when "\003"
                       bind_addr_s
-                    when "\004"  # Untested!
+                    when "\004" # Untested!
                       i = 0
                       ip6 = ''
                       bind_addr_s.each_byte do |b|
@@ -130,5 +146,6 @@ module Socksproxyable
         end
       end
     end
+    # rubocop:enable Metrics
   end
 end

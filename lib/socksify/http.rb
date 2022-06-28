@@ -34,31 +34,19 @@ module Net
     end
 
     class << self
-      alias SOCKSProxy socks_proxy # legacy support for non snake case name
+      alias SOCKSProxy socks_proxy # legacy support for non snake case method name
     end
 
     module SOCKSProxyDelta
       # class methods
       module ClassMethods
-        def socks_server
-          @socks_server
-        end
-
-        def socks_port
-          @socks_port
-        end
+        attr_reader :socks_server, :socks_port
       end
 
-      # instance methods
+      # instance methods - no long supports Ruby < 2
       module InstanceMethods
-        if RUBY_VERSION[0..0] >= '2'
-          def address
-            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, @address)
-          end
-        else
-          def conn_address
-            TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, address)
-          end
+        def address
+          TCPSocket::SOCKSConnectionPeerAddress.new(self.class.socks_server, self.class.socks_port, @address)
         end
       end
     end
