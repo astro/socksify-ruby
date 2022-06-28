@@ -16,17 +16,18 @@
 
 require 'socksify'
 require 'net/http'
+require_relative 'ruby3net_http_connectable'
 
 module Net
   # patched class
   class HTTP
     def self.socks_proxy(p_host, p_port)
-      delta = SOCKSProxyDelta
       proxyclass = Class.new(self)
-      proxyclass.send(:include, delta)
+      proxyclass.send(:include, SOCKSProxyDelta)
       proxyclass.module_eval do
-        include delta::InstanceMethods
-        extend delta::ClassMethods
+        include Ruby3NetHTTPConnectable if RUBY_VERSION.to_f > 3.0 # patch #connect method
+        include SOCKSProxyDelta::InstanceMethods
+        extend SOCKSProxyDelta::ClassMethods
         @socks_server = p_host
         @socks_port = p_port
       end
