@@ -22,5 +22,6 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = Dir.glob('doc/**/*') + %w[COPYING]
   s.add_development_dependency 'minitest', '~> 5.16'
   s.add_development_dependency 'rubocop', '~> 1.31'
+  s.add_development_dependency 'rubocop-minitest', '~> 0.20'
 end
 # rubocop:enable Gemspec/RequireMFA

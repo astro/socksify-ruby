@@ -34,6 +34,7 @@ jobs:
       - name: Install gems
         run: |
           sudo gem install rubocop
+          sudo gem install rubocop-minitest
 
       - name: Set up Ruby
         # Automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
