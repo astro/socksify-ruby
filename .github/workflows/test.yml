@@ -31,6 +31,7 @@ jobs:
           sudo sh -c 'cat /etc/tor/torrc'
           sudo service tor start
           pidof tor
+          gem install rubocop
 
       - name: Set up Ruby
         # Automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
