@@ -1,34 +1,47 @@
+# namespace
 module Socksify
+  # rubocop:disable Style/Documentation
   class Color
     class Reset
-      def self::to_s
+      def self.to_s
         "\e[0m\e[37m"
       end
     end
-  
+
     class Red < Color
-      def num; 31; end
+      def num
+        31
+      end
     end
+
     class Green < Color
-      def num; 32; end
+      def num
+        32
+      end
     end
+
     class Yellow < Color
-      def num; 33; end
+      def num
+        33
+      end
     end
-  
-    def self::to_s
+    # rubocop:enable Style/Documentation
+
+    def self.to_s
       new.to_s
     end
-    
-    def num; 0; end  
-    
+
+    def num
+      0
+    end
+
     def to_s
       "\e[1m\e[#{num}m"
     end
   end
 
   def self.debug=(enabled)
-    @@debug = enabled
+    @debug = enabled
   end
 
   def self.debug_debug(str)
@@ -43,12 +56,8 @@ module Socksify
     debug(Color::Red, str)
   end
 
-  private
-
   def self.debug(color, str)
-    if defined?(@@debug) && @@debug
-      puts "#{color}#{now_s}#{Color::Reset} #{str}"
-    end
+    puts "#{color}#{now_s}#{Color::Reset} #{str}" if defined?(@debug) && @debug
   end
 
   def self.now_s
