@@ -12,4 +12,10 @@ class TCPSocketTest < Minitest::Test
       assert !socket.closed?
     end
   end
+
+  def test_tcp_socket_direct_connection_with_connection_timeout
+    socket = TCPSocket.new('127.0.0.1', 9050)
+
+    assert !socket.closed?
+  end
 end
