@@ -51,5 +51,4 @@ jobs:
 
       - name: Run tests
         run: |
-          bundle exec ruby test/test_socksify.rb
-          bundle exec rubocop
+          bundle exec rake

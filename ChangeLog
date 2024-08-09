@@ -79,4 +79,5 @@ SOCKSify Ruby 1.7.2
 unreleased
 SOCKSify Ruby 1.7.3
 ===================
+* add Rakefile
 * fix missing :timeout kwarg in TCPSocket class (thanks @lizzypy)

@@ -72,7 +72,7 @@ Socksify.resolve("spaceboyz.net")
 
 A tor proxy is required before running the tests. Install tor from your usual package manager, check it is running with `pidof tor` then run the tests with:
 
-`ruby test/test_socksify.rb` (uses minitest, `gem install minitest` if you don't have it)
+`bundle exec rake`
 
 Colorful diagnostic messages are enabled by default via:
 ```rb
@@ -85,7 +85,7 @@ The [repository](https://github.com/astro/socksify-ruby/) can be checked out wit
 
 `$ git-clone git@github.com:astro/socksify-ruby.git`
 
-Send patches via pull requests. Please run `rubcop` & correct any errors first.
+Send patches via pull requests.
 
 ### Further ideas
 
