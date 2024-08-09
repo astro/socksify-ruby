@@ -31,7 +31,7 @@ class TCPSocket
     def initialize(socks_server, socks_port, peer_host)
       @socks_server = socks_server
       @socks_port = socks_port
-      super peer_host
+      super(peer_host)
     end
 
     def inspect

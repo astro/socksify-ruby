@@ -69,7 +69,7 @@ end
 
 module YandexHelperMethods
   def internet_yandex_com_ip(http_klass = Net::HTTP)
-    parse_internet_yandex_com_response get_http(http_klass, 'https://213.180.204.62/internet', 'yandex.com') # "http://yandex.com/internet"
+    parse_internet_yandex_com_response get_http(http_klass, 'https://5.255.255.77/internet', 'yandex.com') # "http://yandex.com/internet"
   end
 
   def parse_internet_yandex_com_response(body)
