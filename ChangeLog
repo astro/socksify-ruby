@@ -75,3 +75,8 @@ SOCKSify Ruby 1.7.2
 * Fix Socksify::debug = false
   Previously, debug was enabled if any value was assigned to Socksify::debug
   (thanks to Dennis Blommesteijn)
+
+unreleased
+SOCKSify Ruby 1.7.3
+===================
+* fix missing :timeout kwarg in TCPSocket class (thanks @lizzypy)

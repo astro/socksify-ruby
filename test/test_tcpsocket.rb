@@ -11,7 +11,7 @@ class TCPSocketTest < Minitest::Test
 
       socket = TCPSocket.new('127.0.0.1', 9050, connect_timeout: 0.1)
 
-      assert !socket.closed?
+      refute_predicate socket, :closed?
     end
 
     def test_tcp_socket_socks_connection_with_connection_timeout
@@ -20,7 +20,7 @@ class TCPSocketTest < Minitest::Test
       # leave off the host because we don't need to worry about connecting to socks
       socket = TCPSocket.new(connect_timeout: 0.1)
 
-      assert !socket.closed?
+      refute_predicate socket, :closed?
     end
   end
 
@@ -29,6 +29,6 @@ class TCPSocketTest < Minitest::Test
 
     socket = TCPSocket.new('127.0.0.1', 9050)
 
-    assert !socket.closed?
+    refute_predicate socket, :closed?
   end
 end
