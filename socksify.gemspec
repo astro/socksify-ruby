@@ -19,5 +19,5 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.executables = %w[socksify_ruby]
   s.extra_rdoc_files = Dir.glob('doc/**/*') + %w[COPYING]
-  s.metadata["funding_uri"] = "https://github.com/sponsors/astro"
+  s.metadata['funding_uri'] = 'https://github.com/sponsors/astro'
 end
