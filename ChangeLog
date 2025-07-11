@@ -81,3 +81,5 @@ SOCKSify Ruby 1.7.3
 ===================
 * add Rakefile
 * fix missing :timeout kwarg in TCPSocket class (thanks @lizzypy)
+* Authentication support added to Net::HTTP.SOCKSProxy
+  (thanks to @ojab)

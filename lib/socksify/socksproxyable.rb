@@ -26,8 +26,8 @@ module Socksproxyable
   # instance method #socks_authenticate
   module InstanceMethodsAuthenticate
     # rubocop:disable Metrics
-    def socks_authenticate
-      if self.class.socks_username || self.class.socks_password
+    def socks_authenticate(socks_username, socks_password)
+      if socks_username || socks_password
         Socksify.debug_debug 'Sending username/password authentication'
         write "\005\001\002"
       else
@@ -42,16 +42,16 @@ module Socksproxyable
         raise SOCKSError, "SOCKS version #{auth_reply[0..0]} not supported"
       end
 
-      if self.class.socks_username || self.class.socks_password
+      if socks_username || socks_password
         if auth_reply[1..1] != "\002"
           raise SOCKSError, "SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported"
         end
 
         auth = "\001"
-        auth += self.class.socks_username.to_s.length.chr
-        auth += self.class.socks_username.to_s
-        auth += self.class.socks_password.to_s.length.chr
-        auth += self.class.socks_password.to_s
+        auth += socks_username.to_s.length.chr
+        auth += socks_username.to_s
+        auth += socks_password.to_s.length.chr
+        auth += socks_password.to_s
         write auth
         auth_reply = recv(2)
         raise SOCKSError, 'SOCKS authentication failed' if auth_reply[1..1] != "\000"

@@ -26,6 +26,10 @@ module HelperMethods
     Net::HTTP.socks_proxy('127.0.0.1', 9050)
   end
 
+  def http_tor_proxy_with_auth(username, password)
+    Net::HTTP.socks_proxy('127.0.0.1', 1080, username, password)
+  end
+
   def get_http(http_klass, url, host_header = nil)
     uri = URI(url)
     body = nil

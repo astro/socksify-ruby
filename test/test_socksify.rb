@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
+require_relative 'test_socksify_legacy'
 
 # test class
 class SocksifyTest < Minitest::Test
@@ -12,43 +13,7 @@ class SocksifyTest < Minitest::Test
     :alpha # until state between tests is fixed
   end
 
-  if RUBY_VERSION.to_f < 3.1 # test legacy methods TCPSocket.socks_server= and TCPSocket.socks_port=
-    def test_check_tor
-      disable_socks
-      is_tor_direct, ip_direct = check_tor
-
-      refute is_tor_direct
-
-      enable_socks
-      is_tor_socks, ip_socks = check_tor
-
-      assert is_tor_socks
-      refute_equal ip_direct, ip_socks
-    end
-
-    def test_check_tor_with_service_as_a_string
-      disable_socks
-      is_tor_direct, ip_direct = check_tor_with_service_as_string
-
-      refute is_tor_direct
-      enable_socks
-      is_tor_socks, ip_socks = check_tor_with_service_as_string
-
-      assert is_tor_socks
-
-      refute_equal ip_direct, ip_socks
-    end
-
-    def test_connect_to_ip
-      disable_socks
-      ip_direct = internet_yandex_com_ip
-      enable_socks
-      ip_socks = internet_yandex_com_ip
-
-      refute_equal ip_direct, ip_socks
-    end
-  end
-  # end legacy method tests
+  include TestSocksifyLegacy
 
   def test_check_tor_via_net_http
     disable_socks
@@ -67,6 +32,20 @@ class SocksifyTest < Minitest::Test
     ip_socks = internet_yandex_com_ip(http_tor_proxy)
 
     refute_equal ip_direct, ip_socks
+  end
+
+  def test_check_tor_via_net_http_with_auth
+    disable_socks
+    ip_address = internet_yandex_com_ip(http_tor_proxy_with_auth('user', 'password'))
+
+    assert_match(/\b\d{1,3}(\.\d{1,3}){3}\b/, ip_address)
+  end
+
+  def test_check_tor_via_net_http_with_wrong_auth
+    disable_socks
+    assert_raises SOCKSError, 'SOCKS authentication failed' do
+      internet_yandex_com_ip(http_tor_proxy_with_auth('user', 'bad_password'))
+    end
   end
 
   def test_ignores
