@@ -22,8 +22,6 @@ module Net
   # patched class
   class HTTP
     def self.socks_proxy(p_host, p_port, p_username = nil, p_password = nil)
-      proxyclass = Class.new(self)
-      proxyclass.send(:include, SOCKSProxyDelta)
       proxyclass.module_eval do
         include Ruby3NetHTTPConnectable if RUBY_VERSION.to_f > 3.0 # patch #connect method
         include SOCKSProxyDelta::InstanceMethods
@@ -36,6 +34,10 @@ module Net
       end
 
       proxyclass
+    end
+
+    def self.proxyclass
+      @proxyclass ||= Class.new(self).tap { |klass| klass.send(:include, SOCKSProxyDelta) }
     end
 
     class << self

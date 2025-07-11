@@ -48,7 +48,7 @@ module Socksproxyable
         end
 
         auth = "\001"
-        auth += username.to_s.length.chr
+        auth += socks_username.to_s.length.chr
         auth += socks_username.to_s
         auth += socks_password.to_s.length.chr
         auth += socks_password.to_s
