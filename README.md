@@ -70,7 +70,9 @@ Socksify.resolve("spaceboyz.net")
 ```
 ### Testing and Debugging
 
-A tor proxy is required before running the tests. Install tor from your usual package manager, check it is running with `pidof tor` then run the tests with:
+A tor proxy and socks5 proxy with auth is required before running the tests. 
+* Install tor from your usual package manager, check it is running with `pidof tor` then run the tests with:
+* Start a SOCKS5 proxy using Docker `docker run -d --name socks5 -p 1080:1080 -e PROXY_USER=user -e PROXY_PASSWORD=password serjs/go-socks5-proxy`
 
 `bundle exec rake`
 
