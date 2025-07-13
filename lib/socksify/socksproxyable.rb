@@ -4,6 +4,8 @@
 module Socksproxyable
   # class methods
   module ClassMethods
+    SOCKS4_VERSIONS = %w[4 4a].freeze
+
     attr_accessor :socks_server, :socks_port, :socks_username, :socks_password
 
     def socks_version
@@ -19,7 +21,7 @@ module Socksproxyable
     end
 
     def socks_version_hex
-      socks_version == '4a' || socks_version == '4' ? "\004" : "\005"
+      SOCKS4_VERSIONS.include?(socks_version) ? "\004" : "\005"
     end
   end
 

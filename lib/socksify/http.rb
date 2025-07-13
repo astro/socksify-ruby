@@ -21,7 +21,7 @@ require_relative 'ruby3net_http_connectable'
 module Net
   # patched class
   class HTTP
-    def self.socks_proxy(p_host, p_port, p_username = nil, p_password = nil)
+    def self.socks_proxy(p_host, p_port, username: nil, password: nil)
       proxyclass.module_eval do
         include Ruby3NetHTTPConnectable if RUBY_VERSION.to_f > 3.0 # patch #connect method
         include SOCKSProxyDelta::InstanceMethods
@@ -29,8 +29,8 @@ module Net
 
         @socks_server = p_host
         @socks_port = p_port
-        @socks_username = p_username
-        @socks_password = p_password
+        @socks_username = username
+        @socks_password = password
       end
 
       proxyclass

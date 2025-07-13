@@ -63,17 +63,32 @@ end
 ```
 Note that `Net::HTTP.socks_proxy` never relies on `TCPSocket.socks_server`/`socks_port`. You should either set `socks_proxy` arguments explicitly or use `Net::HTTP` directly.
 
+### Authentication
+```rb
+require 'socksify/http'
+
+uri = URI.parse('http://ipecho.net/plain')
+Net::HTTP.socks_proxy('127.0.0.1', 1080, username: 'my_username', password: 'my_pwd').start(uri.host, uri.port) do |http|
+  req = Net::HTTP::Get.new uri
+  resp = http.request(req)
+  puts resp.inspect
+  puts resp.body
+end
+```
+
 ### Resolve addresses via SOCKS
 ```rb
 Socksify.resolve("spaceboyz.net")
 # => "87.106.131.203"
 ```
+
 ### Testing and Debugging
 
 A tor proxy and socks5 proxy with auth is required before running the tests. 
-* Install tor from your usual package manager, check it is running with `pidof tor` then run the tests with:
+* Install tor from your usual package manager, check it is running with `pidof tor`
 * Start a SOCKS5 proxy using Docker `docker run -d --name socks5 -p 1080:1080 -e PROXY_USER=user -e PROXY_PASSWORD=password serjs/go-socks5-proxy`
 
+Then run the tests with:
 `bundle exec rake`
 
 Colorful diagnostic messages are enabled by default via:

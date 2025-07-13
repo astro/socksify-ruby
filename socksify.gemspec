@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'rubygems'
+require_relative 'lib/socksify/version'
 
 Gem::Specification.new do |s|
   s.name = 'socksify'
-  s.version = '1.7.3'
+  s.version = Socksify::VERSION
   s.summary = 'Redirect all TCPSockets through a SOCKS5 proxy'
   s.authors = ['Stephan Maka', 'Andrey Kouznetsov', 'Christopher Thorpe', 'Musy Bite', 'Yuichi Tateno', 'David Dollar']
   s.licenses = ['Ruby', 'GPL-3.0']

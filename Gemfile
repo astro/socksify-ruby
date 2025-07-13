@@ -1,13 +1,13 @@
 source 'https://rubygems.org'
 
 group :test do
-  gem 'minitest', '~> 5.16'
+  gem 'minitest', '~> 5.25'
 end
 
 group :development, :test do
-  gem 'rake', '~> 13.2'
-  gem 'rubocop', '~> 1.31'
-  gem 'rubocop-minitest', '~> 0.20'
-  gem 'rubocop-performance', '~> 1.21'
-  gem 'rubocop-rake', '~> 0.6'
+  gem 'rake', '~> 13.3'
+  gem 'rubocop', '~> 1.78'
+  gem 'rubocop-minitest', '~> 0.38'
+  gem 'rubocop-performance', '~> 1.25'
+  gem 'rubocop-rake', '~> 0.7'
 end
