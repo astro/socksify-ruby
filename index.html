@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>SOCKSify Ruby</title>
+    <link rel="stylesheet" type="text/css" href="index.css"/>
+  </head>
+  <body>
+    <h1>SOCKSify Ruby</h1>
+
+    <div class="content">
+
+      <h2>What is it?</h2>
+
+      <p>
+	<b>SOCKSify Ruby</b> redirects any TCP connection initiated by
+	a Ruby script through a SOCKS5 proxy. It serves as a small
+	drop-in alternative
+	to <a href="http://tsocks.sourceforge.net/">tsocks</a>, except
+	that it handles Ruby programs only and doesn't leak DNS
+	queries.
+      </p>
+
+      <h3>How does it work?</h3>
+
+      <p>
+	Modifications to class <code>TCPSocket</code>:
+      </p>
+      <ul>
+	<li>Alias <code>initialize</code>
+	  as <code>initialize_tcp</code></li>
+	<li>The new <code>initialize</code> calls the old method to
+	  establish a TCP connection to the SOCKS proxy, sends the
+	  proxying destination and checks for errors</li>
+      </ul>
+      <p>
+	Additionally, <code>Socksify::resolve</code> can be used to
+	resolve hostnames to IPv4 addresses via SOCKS. There is also
+	<code>socksify/http</code> enabling Net::HTTP to work
+	via SOCKS.
+      </p>
+
+      <h2>Installation</h2>
+      <pre>$ gem install socksify</pre>
+
+      <h2>Usage</h2>
+
+      <h3>Redirect all TCP connections of a Ruby program</h3>
+      <p>
+	Run a Ruby script with redirected TCP through a
+	local <a href="http://www.torproject.org/">Tor</a>
+	anonymizer:
+      </p>
+      <pre>$ socksify_ruby localhost 9050 script.rb</pre>
+
+      <h3>Explicit SOCKS usage in a Ruby program</h3>
+      <p>
+	Set up SOCKS connections for a
+	local <a href="http://www.torproject.org/">Tor</a>
+	anonymizer, TCPSockets can be used as usual:
+      </p>
+      <pre>require 'socksify'
+TCPSocket::socks_server = "127.0.0.1"
+TCPSocket::socks_port = 9050
+rubyforge_www = TCPSocket.new("rubyforge.org", 80)
+# => #&lt;TCPSocket:0x...&gt;</pre>
+
+      <p>
+	Using block only:
+      <pre>require 'socksify'
+require 'open-uri'
+Socksify::proxy("127.0.0.1", 9050) {
+  open('http://rubyforge.org').read
+  # => #&lt;String: rubyforge's html&gt;
+}
+</pre>
+      </p>
+
+      <p>
+      Please note: <b>socksify is not thread-safe</b> when used this way!
+      <code>socks_server</code> and <code>socks_port</code> are stored in class
+      <code>@@</code>-variables, and applied to all threads and fibers of application.
+      </p>
+
+      <h3>Use Net::HTTP explicitly via SOCKS</h3>
+      <p>
+	Require the additional library <code>socksify/http</code>
+	and use the <code>Net::HTTP.SOCKSProxy</code> method. It
+	is similar to <code>Net:HTTP.Proxy</code> from the Ruby
+	standard library:
+      </p>
+      <pre>
+require 'socksify/http'
+uri = URI.parse('http://rubyforge.org/')
+Net::HTTP.SOCKSProxy('127.0.0.1', 9050).start(uri.host, uri.port) do |http|
+  http.get(uri.path)
+end
+# => #&lt;Net::HTTPOK 200 OK readbody=true&gt;</pre>
+
+      <p>
+	Note that <code>Net::HTTP.SOCKSProxy</code> never relies
+	on <code>TCPSocket::socks_server</code>/<code>socks_port</code>.
+	You should either set <code>SOCKSProxy</code> arguments
+	explicitly or use <code>Net::HTTP</code> directly.
+      </p>
+
+      <p>
+	<code>Net::HTTP.SOCKSProxy</code> also supports SOCKS authentication:
+      </p>
+      <pre>
+Net::HTTP.SOCKSProxy('127.0.0.1', 9050, 'username', 'p4ssw0rd')
+      </pre>
+
+
+      <h3>Resolve addresses via SOCKS</h3>
+      <pre>Socksify::resolve("spaceboyz.net")
+# => "87.106.131.203"</pre>
+
+      <h3>Debugging</h3>
+      <p>
+	Colorful diagnostic messages can be enabled via:
+      </p>
+      <pre>Socksify::debug = true</pre>
+
+      <h2>Development</h2>
+
+      <p>
+	The <a href="http://github.com/astro/socksify-ruby/">repository</a>
+	can be checked out with:
+      </p>
+      <pre>$ git-clone git://github.com/astro/socksify-ruby.git</pre>
+      <p>
+	Send patches via E-Mail.
+      </p>
+
+      <h3>Further ideas</h3>
+      <ul>
+	<li><code>Resolv</code> replacement code, so that programs
+	  which resolve by themselves don't leak DNS queries</li>
+	<li>IPv6 address support</li>
+	<li>UDP as soon
+	  as <a href="http://www.torproject.org/">Tor</a> supports
+	  it</li>
+	<li>Perhaps using standard exceptions for better compatibility
+	  when acting as a drop-in?</li>
+      </ul>
+
+      <h2>Author</h2>
+      <ul>
+	<li>
+	  <a href="mailto:stephan@spaceboyz.net">Stephan Maka</a>
+	</li>
+      </ul>
+
+      <h2>License</h2>
+      <p>
+	SOCKSify Ruby is distributed under the terms of the GNU
+	General Public License version 3 (see
+	file <code>COPYING</code>) or the Ruby License (see
+	file <code>LICENSE</code>) at your option.
+      </p>
+    </div>
+  </body>
+</html>
