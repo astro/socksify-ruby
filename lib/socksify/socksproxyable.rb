@@ -37,7 +37,7 @@ module Socksproxyable
         write "\005\001\000"
       end
       Socksify.debug_debug 'Waiting for authentication reply'
-      auth_reply = recv(2)
+      auth_reply = recv(2).to_s
       raise SOCKSError, "Server doesn't reply authentication" if auth_reply.empty?
 
       if auth_reply[0..0] != "\004" && auth_reply[0..0] != "\005"
@@ -55,7 +55,7 @@ module Socksproxyable
         auth += socks_password.to_s.length.chr
         auth += socks_password.to_s
         write auth
-        auth_reply = recv(2)
+        auth_reply = recv(2).to_s
         raise SOCKSError, 'SOCKS authentication failed' if auth_reply[1..1] != "\000"
       elsif auth_reply[1..1] != "\000"
         raise SOCKSError, "SOCKS authentication method #{auth_reply[1..1]} neither requested nor supported"
@@ -105,7 +105,7 @@ module Socksproxyable
     def socks_receive_reply
       Socksify.debug_debug 'Waiting for SOCKS reply'
       if self.class.socks_version == '5'
-        connect_reply = recv(4)
+        connect_reply = recv(4).to_s
         raise SOCKSError, "Server doesn't reply" if connect_reply.empty?
 
         Socksify.debug_debug connect_reply.unpack 'H*'
@@ -117,13 +117,13 @@ module Socksproxyable
                         when "\001"
                           4
                         when "\003"
-                          recv(1).bytes.first
+                          recv(1).to_s.bytes.first
                         when "\004"
                           16
                         else
                           raise SOCKSError.for_response_code(connect_reply.bytes.to_a[3])
                         end
-        bind_addr_s = recv(bind_addr_len)
+        bind_addr_s = recv(bind_addr_len).to_s
         bind_addr = case connect_reply[3..3]
                     when "\001"
                       bind_addr_s.bytes.to_a.join('.')
@@ -138,10 +138,10 @@ module Socksproxyable
                         ip6 += b.to_s(16).rjust(2, '0')
                       end
                     end
-        bind_port = recv(bind_addr_len + 2)
+        bind_port = recv(bind_addr_len + 2).to_s
         [bind_addr, bind_port.unpack('n')]
       else
-        connect_reply = recv(8)
+        connect_reply = recv(8).to_s
         unless connect_reply[0] == "\000" && connect_reply[1] == "\x5A"
           Socksify.debug_debug connect_reply.unpack 'H'
           raise SOCKSError, 'Failed while connecting througth socks'
